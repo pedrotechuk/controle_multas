@@ -2,6 +2,7 @@
 
 use Carbon\Carbon;
 use App\Classes\Ad;
+use Illuminate\Validation\Rule;
 use Mary\Traits\Toast;
 use App\Models\Status;
 use App\Models\StatusFinal;
@@ -19,7 +20,7 @@ state(['modal_multa'])->modelable();
 state(['all_data' => []]);
 
 state(['unidades' => [], 'propriedades' => [], 'locais' => []]);
-state(['unidade','data_ciencia', 'data_multa', 'data_limite', 'responsavel', 'propriedade', 'local', 'auto_infracao']);
+state(['unidade', 'data_ciencia', 'data_multa', 'data_limite', 'responsavel', 'propriedade', 'local', 'auto_infracao']);
 
 mount(function () {
     if (!Gate::forUser(Auth::user())->allows('admin.users.delete')) {
@@ -47,7 +48,10 @@ $save = function () {
             'responsavel' => ['required'],
             'propriedade' => ['required'],
             'local' => ['required'],
-            'auto_infracao' => ['required', 'unique:multas,auto_infracao'],
+            'auto_infracao' => [
+                'required',
+                Rule::unique('multas', 'auto_infracao')->whereNull('deleted_at'),
+            ],
         ],
         [
             'unidade.required' => 'Selecione a unidade.',
@@ -103,11 +107,11 @@ layout('layouts.app');
         @csrf
         <div class="flex flex-col gap-2">
             <x-select label="Unidade:" placeholder="Selecione uma unidade..." placeholder-value="0"
-                :options="$this->unidades" wire:model.live="unidade" icon="o-building-office-2"/>
+                      :options="$this->unidades" wire:model.live="unidade" icon="o-building-office-2"/>
             <x-datetime label="Data da ciência da multa:" wire:model="data_ciencia" icon="o-calendar"
-                        type="datetime-local" />
+                        type="datetime-local"/>
             <x-datetime label="Data da infração:" wire:model="data_multa" icon="o-calendar"
-                        type="datetime-local" />
+                        type="datetime-local"/>
 
             <div class="flex flex-row w-full justify-between">
                 <x-select label="Propriedade:" placeholder="Selecione a proprietária..." placeholder-value="0"
@@ -116,13 +120,14 @@ layout('layouts.app');
                           :options="$this->locais" wire:model.live="local" icon="o-building-office"/>
             </div>
 
-            <x-input label="Responsável:" wire:model="responsavel" placeholder="Ex: João da Silva" icon="o-user" />
-            <x-input label="N° Auto Infração:" wire:model="auto_infracao" placeholder="Digite o n° da auto infração" icon="o-clipboard-document-list" />
+            <x-input label="Responsável:" wire:model="responsavel" placeholder="Ex: João da Silva" icon="o-user"/>
+            <x-input label="N° Auto Infração:" wire:model="auto_infracao" placeholder="Digite o n° da auto infração"
+                     icon="o-clipboard-document-list"/>
 
             <div class="flex flex-row justify-evenly items-center mt-2">
                 <x-button class="btn-sm " label="VOLTAR" icon="m-arrow-uturn-left"
-                          link="{{ route('dashboard') }}" />
-                <x-button class="btn-sm btn-success text-white" label="SALVAR" icon="o-check" wire:click="save" />
+                          link="{{ route('dashboard') }}"/>
+                <x-button class="btn-sm btn-success text-white" label="SALVAR" icon="o-check" wire:click="save"/>
             </div>
         </div>
     </form>
