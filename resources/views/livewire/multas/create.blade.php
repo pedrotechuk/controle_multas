@@ -117,8 +117,7 @@ layout('layouts.app');
             </div>
 
             <x-input label="Responsável:" wire:model="responsavel" placeholder="Ex: João da Silva" icon="o-user" />
-            <x-input label="N° Auto Infração:" wire:model="auto_infracao" placeholder="Digite o n° da auto infração"
-                     icon="o-clipboard-document-list" oninput="this.value = this.value.toUpperCase()" />
+            <x-input label="N° Auto Infração:" wire:model="auto_infracao" placeholder="Digite o n° da auto infração" icon="o-clipboard-document-list" />
 
             <div class="flex flex-row justify-evenly items-center mt-2">
                 <x-button class="btn-sm " label="VOLTAR" icon="m-arrow-uturn-left"

@@ -20,6 +20,7 @@ class Multa extends Model
         'data_limite',
         'responsavel',
         'propriedade',
+        'local',
         'auto_infracao',
         'condutor',
         'data_identificacao',
