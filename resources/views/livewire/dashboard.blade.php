@@ -6,8 +6,6 @@ use Mary\Traits\Toast;
 use App\Models\Status;
 use App\Models\StatusFinal;
 use App\Models\Propriedade;
-
-
 use App\Models\Multa;
 
 use function Livewire\Volt\{state, layout, mount, uses, with, usesPagination};
@@ -17,9 +15,11 @@ usesPagination();
 uses([Toast::class]);
 
 state(['id'])->url();
+state(['modal_multa' => false]);
 
 state(['unidades' => [], 'propriedades' => [], 'statuses' => [], 'status_finals' => []]);
 state(['unidade', 'data_ciencia', 'data_multa', 'data_limite', 'responsavel', 'propriedade', 'local', 'auto_infracao', 'condutor', 'data_identificacao', 'data_identificacao_detran', 'status', 'status_final']);
+
 
 mount(function () {
     if (!Gate::forUser(Auth::user())->allows('admin.users.delete')) {
@@ -74,8 +74,13 @@ $inativarMulta = function ($id) {
 
         return $this->success('Multa excluída com sucesso');
     } catch (Exception $e) {
+        dd ($e->getMessage());
         return $this->error('Não foi possível excluir multa.');
     }
+};
+
+$teste = function () {
+  $this->modal_multa = true;
 };
 
 
@@ -87,8 +92,7 @@ layout('layouts.app');
     <div>
         <div class="flex flex-row justify-between items-center bg-gray-100 p-4 shadow rounded">
             <h1 class="font-bold text-gray-700">Multas Cadastradas</h1>
-            <x-button class="btn-sm btn-success" label="ADICIONAR MULTA" icon="o-plus"
-                      link="{{ route('power_users.create') }}"/>
+            <x-button class="btn-sm btn-success" label="ADICIONAR MULTA" icon="o-plus" link="" wire:click="teste"/>
         </div>
 
         <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden mt-2">
@@ -135,23 +139,29 @@ layout('layouts.app');
                     <td class="py-2 px-4 border-b text-center">{{ $multa->responsavel }}</td>
                     <td class="py-2 px-4 border-b text-center">{{$multa->propriedade_model->local}} - {{ $multa->local_model->local }}</td>
                     <td class="py-2 px-4 border-b text-center">{{ $multa->auto_infracao }}</td>
-                    <td class="py-2 px-4 border-b text-center">{{ $multa->condutor }}</td>
-{{--                    <td class="py-2 px-4 border-b text-center">{{ $multa->status_final_model->status_final_name }}</td>--}}
+                    <td class="py-2 px-4 border-b text-center">
+                        @if ($multa->condutor)
+                            {{ $multa->condutor }}
+                        @else
+                            <span class="text-orange-500 ">Pendente</span>
+                        @endif
+                    </td>
+                    {{--                    <td class="py-2 px-4 border-b text-center">{{ $multa->status_final_model->status_final_name }}</td>--}}
 
                     <td class="py-2 px-4 border-b text-center">
                         <x-button class="btn-outline btn-sm" tooltip="Identificação Interna" icon="o-clipboard-document-list"
-                                  link="{{ route('power_users.permissions', ['id' => $multa->id]) }}"/>
+                                 />
 
                         <x-button class="btn-outline btn-sm" tooltip="Identificação Detran" icon="o-building-library"
-                                  link="{{ route('power_users.permissions', ['id' => $multa->id]) }}"/>
+                                  />
 
                         <x-button class="btn-outline btn-success btn-sm" tooltip="Finalizar multa" icon="o-clipboard-document-check"
-                                  link="{{ route('power_users.update', ['id' => $multa->id]) }}"/>
+                                  />
                     </td>
 
                     <td class="py-2 px-4 border-b text-center">
                         <x-button class="btn-sm" tooltip="Editar mult." icon="o-pencil"
-                                  link="{{ route('power_users.update', ['id' => $multa->id]) }}"/>
+                                  />
 
                         <x-button tooltip="Inativar Usuário." icon="o-trash" class="btn-error btn-sm text-white"
                                   wire:confirm="Deseja realmente inativar esse usuário?"
@@ -160,7 +170,7 @@ layout('layouts.app');
                 </tr>
             @empty
                 <tr class="hover:bg-slate-50">
-                    <td class="py-2 px-4 border-b text-center ">Não há usuários cadastrados.</td>
+                    <td class="py-2 px-4 border-b text-center ">Não há multas cadastradas.</td>
                 </tr>
             @endforelse
             </tbody>
@@ -170,4 +180,8 @@ layout('layouts.app');
     <div class="mt-2">
         {{ $multas->links() }}
     </div>
+
+    <x-modal wire:model.live="modal_multa" class="backdrop-blur">
+        <livewire:multas.create  />
+    </x-modal>
 </div>
