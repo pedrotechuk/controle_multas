@@ -15,10 +15,15 @@ usesPagination();
 uses([Toast::class]);
 
 state(['id'])->url();
+state(['all_data' => []]);
+
 state(['modal_multa' => false]);
+state(['modal_ident_interna' => false]);
+state(['modal_ident_detran' => false]);
+
 
 state(['unidades' => [], 'propriedades' => [], 'statuses' => [], 'status_finals' => []]);
-state(['unidade', 'data_ciencia', 'data_multa', 'data_limite', 'responsavel', 'propriedade', 'local', 'auto_infracao', 'condutor', 'data_identificacao', 'data_identificacao_detran', 'status', 'status_final']);
+state(['unidade', 'multa', 'data_ciencia', 'data_multa', 'data_limite', 'responsavel', 'propriedade', 'local', 'auto_infracao', 'condutor', 'data_identificacao', 'data_identificacao_detran', 'status', 'status_final']);
 
 
 mount(function () {
@@ -40,7 +45,7 @@ mount(function () {
 });
 
 with(function () {
-    $multas = Multa::query()->orderBy('id', 'asc')
+    $multas = Multa::query()->orderBy('data_multa', 'desc')
         ->when($this->unidade, fn($query) => $query->where('unidade', $this->unidade))
         ->when($this->data_ciencia, fn($query) => $query->whereDate('data_ciencia', $this->data_ciencia))
         ->when($this->data_multa, fn($query) => $query->whereDate('data_multa', $this->data_multa))
@@ -74,15 +79,95 @@ $inativarMulta = function ($id) {
 
         return $this->success('Multa excluída com sucesso');
     } catch (Exception $e) {
-        dd ($e->getMessage());
         return $this->error('Não foi possível excluir multa.');
     }
 };
 
-$teste = function () {
+$ident_Interna = function () {
+    $data = $this->validate(
+        [
+            'condutor' => ['required'],
+            'data_identificacao' => ['required', 'date'],
+        ],
+        [
+            'condutor.required' => 'Informe o condutor.',
+            'data_identificacao.required' => 'Selecione a data da identificação.',
+        ]
+    );
+
+    $this->all_data = array_merge($this->all_data, $data);
+
+    try {
+        $this->multa->update([
+            'condutor' => $this->all_data['condutor'],
+            'data_identificacao' => $this->all_data['data_identificacao'],
+            'status' => 2,
+            'updated_by' => Ad::username(),
+        ]);
+
+        $this->success('Identificação interna realizada com sucesso!');
+
+        $this->reset([
+            'condutor', 'data_identificacao'
+        ]);
+
+        return redirect(route('dashboard'));
+    } catch (Exception $e) {
+        return $this->error('Não foi possível concluir a identificação interna.');
+    }
+};
+
+$ident_Detran = function () {
+    $data = $this->validate(
+        [
+            'data_identificacao_detran' => ['required', 'date'],
+        ],
+        [
+            'data_identificacao_detran.required' => 'Selecione a data da identificação.',
+        ]
+    );
+
+    $this->all_data = array_merge($this->all_data, $data);
+
+    try {
+        $this->multa->update([
+            'data_identificacao_detran' => $this->all_data['data_identificacao_detran'],
+            'status' => 3,
+            'updated_by' => Ad::username(),
+        ]);
+
+        $this->success('Identificação Detran realizada com sucesso!');
+
+        $this->reset([
+            'condutor', 'data_identificacao_detran'
+        ]);
+
+        return redirect(route('dashboard'));
+    } catch (Exception $e) {
+        return $this->error('Não foi possível concluir a identificação Detran.');
+    }
+};
+
+$openModalMulta = function () {
   $this->modal_multa = true;
 };
 
+$openModalIdentInterna  = function ($id) {
+    $this->multa = Multa::find($id);
+    $this->modal_ident_interna= true;
+};
+
+$openModalIdentDetran = function ($id){
+    $this->multa = Multa::find($id);
+
+    if ($this->multa) {
+        $this->multa_id = $this->multa->id;
+        $this->condutor = $this->multa->condutor;
+        $this->data_identificacao = $this->multa->data_identificacao;
+    }
+
+    $this->modal_ident_detran = true;
+};
 
 layout('layouts.app');
 
@@ -92,7 +177,7 @@ layout('layouts.app');
     <div>
         <div class="flex flex-row justify-between items-center bg-gray-100 p-4 shadow rounded">
             <h1 class="font-bold text-gray-700">Multas Cadastradas</h1>
-            <x-button class="btn-sm btn-success" label="ADICIONAR MULTA" icon="o-plus" link="" wire:click="teste"/>
+            <x-button class="btn-sm btn-success" label="ADICIONAR MULTA" icon="o-plus" link="" wire:click="openModalMulta"/>
         </div>
 
         <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden mt-2">
@@ -149,22 +234,22 @@ layout('layouts.app');
                     {{--                    <td class="py-2 px-4 border-b text-center">{{ $multa->status_final_model->status_final_name }}</td>--}}
 
                     <td class="py-2 px-4 border-b text-center">
-                        <x-button class="btn-outline btn-sm" tooltip="Identificação Interna" icon="o-clipboard-document-list"
-                                 />
+                        <x-button class="btn-outline btn-sm" tooltip="Identificação Interna" icon="o-clipboard-document-list" link=""
+                                  wire:click="openModalIdentInterna({{$multa->id}})"/>
 
                         <x-button class="btn-outline btn-sm" tooltip="Identificação Detran" icon="o-building-library"
-                                  />
+                                  wire:click="openModalIdentDetran({{$multa->id}})" />
 
                         <x-button class="btn-outline btn-success btn-sm" tooltip="Finalizar multa" icon="o-clipboard-document-check"
                                   />
                     </td>
 
                     <td class="py-2 px-4 border-b text-center">
-                        <x-button class="btn-sm" tooltip="Editar mult." icon="o-pencil"
+                        <x-button class="btn-sm" tooltip="Editar multa." icon="o-pencil"
                                   />
 
-                        <x-button tooltip="Inativar Usuário." icon="o-trash" class="btn-error btn-sm text-white"
-                                  wire:confirm="Deseja realmente inativar esse usuário?"
+                        <x-button tooltip="Excluir multa." icon="o-trash" class="btn-error btn-sm text-white"
+                                  wire:confirm="Deseja realmente inativar essa multa?"
                                   wire:click="inativarMulta({{ $multa->id }})"/>
                     </td>
                 </tr>
@@ -182,6 +267,38 @@ layout('layouts.app');
     </div>
 
     <x-modal wire:model.live="modal_multa" class="backdrop-blur">
-        <livewire:multas.create  />
+        <livewire:multas.create/>
+    </x-modal>
+
+    <x-modal wire:model.live="modal_ident_interna" class="backdrop-blur">
+        <div>
+            <h1 class="font-bold uppercase text-center text-gray-700 underline">IDENTIFICAÇÃO INTERNA</h1>
+            <form wire:submit.prevent="ident_Interna">
+                <div class="flex flex-col gap-2">
+                    <x-input label="Condutor:" placeholder="Informe o condutor..." wire:model.live="condutor" icon="o-building-office-2"/>
+                    <x-datetime label="Data da identificação:" wire:model="data_identificacao" icon="o-calendar" type="datetime-local"/>
+                    <div class="flex flex-row justify-evenly items-center mt-2">
+                        <x-button class="btn-sm " label="FECHAR" wire:click="$set('modal_ident_interna', false)"/>
+                        <x-button class="btn-sm btn-success text-white" label="SALVAR" icon="o-check" wire:click="ident_Interna"/>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </x-modal>
+
+    <x-modal wire:model.live="modal_ident_detran" class="backdrop-blur">
+        <div>
+            <h1 class="font-bold uppercase text-center text-gray-700 underline">IDENTIFICAÇÃO DETRAN</h1>
+            <form wire:submit.prevent="ident_Detran">
+                <div class="flex flex-col gap-2">
+                    <x-input readonly label="Condutor:" placeholder="Informe o condutor..." wire:model.live="condutor" icon="o-building-office-2"/>
+                    <x-datetime label="Data da identificação no Detran:" wire:model="data_identificacao_detran" icon="o-calendar" type="datetime-local"/>
+                    <div class="flex flex-row justify-evenly items-center mt-2">
+                        <x-button class="btn-sm " label="FECHAR" wire:click="$set('modal_ident_detran', false)"/>
+                        <x-button class="btn-sm btn-success text-white" label="SALVAR" icon="o-check" wire:click="ident_Detran"/>
+                    </div>
+                </div>
+            </form>
+        </div>
     </x-modal>
 </div>
