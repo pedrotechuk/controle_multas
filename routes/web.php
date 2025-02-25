@@ -27,6 +27,12 @@ if (env('APP_ENV') === 'production') {
 
 Volt::route('/', 'dashboard')->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::prefix('/erros')->group(function () {
+    Route::view('/403', 'erros.403')->name('errors.403');
+    Route::view('/401', 'erros.401')->name('errors.401');
+});
+
+
 Route::prefix('/admin')->group(function () {
     Volt::route('/exportar', 'admin.exports.index')->middleware(['auth', 'verified'])->name('admin.exports.index');
 
@@ -42,6 +48,17 @@ Route::prefix('/admin')->group(function () {
         Volt::route('/editar/{id}', 'admin.profile.update')->middleware(['auth', 'verified'])->name('admin.profile.update');
         Volt::route('/editar-permissoes/{id}', 'admin.profile.update-permissions')->middleware(['auth', 'verified'])->name('admin.profile.update-permissions');
     });
+});
+
+Route::prefix('/multas')->group(function (){
+    Volt::route('/finalizar/{id}', 'multas.finalize')->middleware(['auth', 'verified'])->name('multas.finalize');
+    Volt::route('/editar/{id}', 'multas.update')->middleware(['auth', 'verified'])->name('multas.update');
+});
+
+Route::prefix('/consultas')->group(function (){
+    Volt::route('/', 'consultas.index')->middleware(['auth', 'verified'])->name('consultas.index');
+    Volt::route('/info/{id}', 'consultas.info')->middleware(['auth', 'verified'])->name('consultas.info');
+
 });
 
 require __DIR__ . '/auth.php';

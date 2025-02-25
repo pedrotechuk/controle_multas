@@ -86,7 +86,7 @@ layout('layouts.app');
                         <td class="py-2 px-4 border-b text-center">{{ $user->profile->name }}</td>
                         <td class="py-2 px-4 border-b text-center">{{ !$user->deleted_at ? 'Ativo' : 'Inativo' }}</td>
                         <td class="py-2 px-4 border-b text-center">
-                            <x-button class="btn-info btn-sm" tooltip="Editar Usuário." icon="o-pencil"
+                            <x-button class="btn-outline btn-sm" tooltip="Editar Usuário." icon="o-pencil"
                                 link="{{ route('admin.users.update', ['id' => $user->id]) }}" />
 
                             @if (!$user->deleted_at)

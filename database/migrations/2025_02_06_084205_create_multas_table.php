@@ -26,6 +26,8 @@ return new class extends Migration
             $table->timestamp('data_identificacao_detran');
             $table->foreignId('status')->nullable()->constrained('statuses')->onDelete('cascade');
             $table->foreignId('status_final')->nullable()->constrained('status_finals')->onDelete('cascade');
+            $table->string('justificativa')->nullable();
+            $table->timestamp('data_finalizada');
 
             $table->users_actions();
             $table->timestamps();

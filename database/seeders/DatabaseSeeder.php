@@ -29,7 +29,7 @@ class DatabaseSeeder extends Seeder
             ]
         ]);
 
-    
+
 
         DB::table('permissions')->insert([
             // ---------------------------------------
@@ -237,8 +237,8 @@ class DatabaseSeeder extends Seeder
         ]);
 
         DB::table('statuses')->insert([
-            
-            [  
+
+            [
                 'status_name' => 'Ciente',
                 'created_by' => 'importacao',
                 'updated_by' => 'importacao',
@@ -246,27 +246,34 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => Carbon::now()
             ],
             [
-                'status_name' => 'Identificação Interna',
+                'status_name' => 'Identificada Interna',
                 'created_by' => 'importacao',
                 'updated_by' => 'importacao',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
             [
-                'status_name' => 'Identificação Detran',
+                'status_name' => 'Identificada Detran',
                 'created_by' => 'importacao',
                 'updated_by' => 'importacao',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
-            [   
-                'status_name' => 'Status Final',
+            [
+                'status_name' => 'Finalizada',
                 'created_by' => 'importacao',
                 'updated_by' => 'importacao',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
-                
+            [
+                'status_name' => 'Excluída',
+                'created_by' => 'importacao',
+                'updated_by' => 'importacao',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ]
+
         ]);
 
         DB::table('status_finals')->insert([
@@ -301,7 +308,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         DB::table('propriedades')->insert([
-            
+
             [
                 'local' => 'MGA',
                 'created_by' => 'importacao',

@@ -23,7 +23,7 @@ state(['unidades' => [], 'propriedades' => [], 'locais' => []]);
 state(['unidade', 'data_ciencia', 'data_multa', 'data_limite', 'responsavel', 'propriedade', 'local', 'auto_infracao']);
 
 mount(function () {
-    if (!Gate::forUser(Auth::user())->allows('admin.users.delete')) {
+    if (!Gate::forUser(Auth::user())->allows('apps.view-any')) {
         return redirect()->route('errors.403');
     }
     $this->multa = Multa::find($this->id);
@@ -121,8 +121,9 @@ layout('layouts.app');
             </div>
 
             <x-input label="Responsável:" wire:model="responsavel" placeholder="Ex: João da Silva" icon="o-user"/>
-            <x-input label="N° Auto Infração:" wire:model="auto_infracao" placeholder="Digite o n° da auto infração"
-                     icon="o-clipboard-document-list"/>
+            <x-input label="N° Auto Infração:" wire:model.live.debounce.300ms="auto_infracao"
+                     oninput="this.value = this.value.toUpperCase()"
+                     placeholder="Digite o n° da auto infração" icon="o-clipboard-document-list"/>
 
             <div class="flex flex-row justify-evenly items-center mt-2">
                 <x-button class="btn-sm " label="VOLTAR" icon="m-arrow-uturn-left"

@@ -22,7 +22,7 @@ state(['unidades' => [], 'propriedades' => [], 'locais' => []]);
 state(['unidade', 'data_ciencia', 'data_multa', 'data_limite', 'responsavel', 'propriedade', 'local', 'auto_infracao']);
 
 mount(function () {
-    if (!Gate::forUser(Auth::user())->allows('admin.users.delete')) {
+    if (!Gate::forUser(Auth::user())->allows('apps.view-any')) {
         return redirect()->route('errors.403');
     }
     $this->multa = Multa::find($this->id);

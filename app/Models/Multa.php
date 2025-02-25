@@ -27,6 +27,8 @@ class Multa extends Model
         'data_identificacao_detran',
         'status',
         'status_final',
+        'justificativa',
+        'data_finalizada',
         'created_by',
         'updated_by',
         'deleted_by',

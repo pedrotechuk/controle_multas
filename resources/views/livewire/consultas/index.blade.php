@@ -39,7 +39,7 @@ mount(function () {
 
     $this->locais = Propriedade::whereNull('deleted_at')->orderBy('local', 'asc')->get()->map(fn($propriedade) => ['id' => $propriedade->id, 'name' => $propriedade->local]);
 
-    $this->statuses = Status::whereNull('deleted_at')->orderBy('id', 'asc')->get()->map(fn($status) => ['id' => $status->id, 'name' => $status->status_name]);
+    $this->statuses = Status::whereNull('deleted_at')->orderBy('status_name', 'asc')->get()->map(fn($status) => ['id' => $status->id, 'name' => $status->status_name]);
 
     $this->status_finals = statusFinal::whereNull('deleted_at')->orderBy('status_final_name', 'asc')->get()->map(fn($status_final) => ['id' => $status_final->id, 'name' => $status_final->status_final_name]);
 
@@ -49,7 +49,7 @@ mount(function () {
     $this->data_multa = $filters['data_multa'] ?? null;
     $this->responsavel = $filters['responsavel'] ?? null;
     $this->condutor = $filters['condutor'] ?? null;
-    $this->status = $filters['status'] ?? null;
+    $this->status_final = $filters['status_final'] ?? null;
 });
 
 with(function () {
@@ -67,7 +67,7 @@ with(function () {
         ->when($this->data_identificacao_detran, fn($query) => $query->whereDate('data_identificacao_detran', $this->data_identificacao_detran))
         ->when($this->status, fn($query) => $query->where('status', $this->status))
         ->when($this->status_final, fn($query) => $query->where('status_final', $this->status_final))
-        ->whereNot('status', 4);
+        ->where('status', 4);
 
     return [
         'multas' => $multas->paginate(15),
@@ -80,18 +80,18 @@ $filtrar = function () {
         'data_multa' => $this->data_multa,
         'responsavel' => $this->responsavel,
         'condutor' => $this->condutor,
-        'status' => $this->status
+        'status_final' => $this->status_final
     ]);
 };
 
 $resetarFiltros = function() {
     Session::forget('filters');
 
-    return $this->reset(['unidade', 'data_multa', 'responsavel', 'condutor', 'status']);
+    return $this->reset(['unidade', 'data_multa', 'responsavel', 'condutor', 'status_final']);
 };
 
 $inativarMulta = function ($id) {
-    if (!Gate::forUser(Auth::user())->allows('apps.view-any')) {
+    if (!Gate::forUser(Auth::user())->allows('admin.users.delete')) {
         return $this->error('Sem permissão para excluir multa.');
     }
 
@@ -171,20 +171,6 @@ $ident_Detran = function () {
     }
 };
 
-$getButtonClass = function ($dateStart, $daysThreshold, $warningDays, $errorDays) {
-    if (!$dateStart) return 'btn-sm btn-outline';
-
-    $diffDays = Carbon::parse($dateStart)->diffInDays(Carbon::now());
-
-    if ($diffDays > $errorDays) {
-        return 'btn-sm btn-error btn-outline';
-    } elseif ($diffDays > $warningDays) {
-        return 'btn-sm btn-warning btn-outline';
-    }
-
-    return 'btn-sm btn-outline';
-};
-
 $openModalMulta = function () {
     $this->modal_multa = true;
 };
@@ -214,8 +200,8 @@ layout('layouts.app');
     <div>
         <div class="flex flex-row justify-between items-center bg-gray-100 p-4 shadow rounded">
             <h1 class="font-bold text-gray-700">Multas Cadastradas</h1>
-            <x-button class="btn-sm btn-success" label="ADICIONAR MULTA" icon="o-plus" link=""
-                      wire:click="openModalMulta"/>
+            <x-button class="btn-sm btn-outline" label="VER MULTAS EM ANDAMENTO" icon="o-document-text"
+                      link="{{route('dashboard')}}"/>
         </div>
 
         <div class="grid grid-cols-7 gap-4 bg-gray-100 p-4 shadow rounded mt-2">
@@ -225,8 +211,8 @@ layout('layouts.app');
             <x-input label="Filtrar por responsável:" placeholder="Nome do responsável" wire:model="responsavel" />
             <x-input label="Filtrar por condutor:" placeholder="Nome do condutor" wire:model="condutor" />
 
-            <x-select label="Filtrar por status:" :options="$this->statuses->filter(fn($status) => !in_array($status['id'], [4, 5]))"
-                      wire:model="status" placeholder="Selecione um status..." placeholder-value="0" option-label="name" option-value="id"/>
+            <x-select label="Filtrar por status final:" :options="$this->status_finals"
+                      wire:model="status_final" placeholder="Selecione um status..." />
 
             <x-button class="btn-outline mt-7" icon="o-x-circle" label="LIMPAR FILTROS" wire:click="resetarFiltros" />
             <x-button class="btn-outline mt-7" icon="o-adjustments-horizontal" label="FILTRAR"
@@ -239,12 +225,12 @@ layout('layouts.app');
                 <th class="py-2 px-4 border-b">Unidade</th>
                 <th class="py-2 px-4 border-b">Data Multa</th>
                 <th class="py-2 px-4 border-b">Data Limite</th>
-                <th class="py-2 px-4 border-b">Status</th>
+                <th class="py-2 px-4 border-b">Status Final</th>
                 <th class="py-2 px-4 border-b">Responsável</th>
                 <th class="py-2 px-4 border-b">Propriedade/Local</th>
                 <th class="py-2 px-4 border-b">N° Auto Infração</th>
                 <th class="py-2 px-4 border-b">Condutor</th>
-                <th class="py-2 px-4 border-b">Etapas</th>
+                {{--                <th class="py-2 px-4 border-b">Etapas</th>--}}
                 <th class="py-2 px-4 border-b">Ações</th>
 
             </tr>
@@ -273,7 +259,7 @@ layout('layouts.app');
                     </td>
                     <td class="py-2 px-4 border-b text-center">{{ Carbon::parse($multa->data_ciencia)->format('d/m/Y') }}</td>
                     <td class="py-2 px-4 border-b text-center">{{ Carbon::parse($multa->data_limite)->format('d/m/Y') }}</td>
-                    <td class="py-2 px-4 border-b text-center">{{ $multa->status_model->status_name ?? 'N/A' }}</td>
+                    <td class="py-2 px-4 border-b text-center">{{ $multa->status_final_model->status_final_name ?? 'N/A' }}</td>
                     <td class="py-2 px-4 border-b text-center">{{ $multa->responsavel }}</td>
                     <td class="py-2 px-4 border-b text-center">{{$multa->propriedade_model->local}}
                         - {{ $multa->local_model->local }}</td>
@@ -288,41 +274,9 @@ layout('layouts.app');
                     {{--                    <td class="py-2 px-4 border-b text-center">{{ $multa->status_final_model->status_final_name }}</td>--}}
 
                     <td class="py-2 px-4 border-b text-center">
-                        <x-button
-                            class="btn-outline btn-sm"
-                            tooltip="Identificação Interna"
-                            icon="o-clipboard-document-list"
-                            link=""
-                            wire:click="openModalIdentInterna({{ $multa->id }})"
-                            :class="$this->getButtonClass($multa->data_ciencia, 1, 7, 10)"
-                        />
 
-                        <x-button
-                            class="btn-outline btn-sm"
-                            tooltip="Identificação Detran"
-                            icon="o-building-library"
-                            wire:click="openModalIdentDetran({{ $multa->id }})"
-                            :disabled="!$multa->condutor || !$multa->data_identificacao"
-                            :class="$this->getButtonClass($multa->data_identificacao, 1, 2, 5)"
-                        />
-
-                        <x-button
-                            class="btn-outline btn-success btn-sm"
-                            tooltip="Finalizar multa"
-                            icon="o-clipboard-document-check"
-                            link="{{ route('multas.finalize', ['id' => $multa->id]) }}"
-                            :disabled="!$multa->data_identificacao_detran"
-                            :class="$this->getButtonClass($multa->data_identificacao_detran, 1, 4, 7)"
-                        />
-                    </td>
-
-                    <td class="py-2 px-4 border-b text-center">
-                        <x-button class="btn-sm" tooltip="Editar multa." icon="o-pencil"
-                                  link="{{route('multas.update', ['id' => $multa->id])}}"/>
-
-                        <x-button tooltip="Excluir multa." icon="o-trash" class="btn-error btn-sm text-white"
-                                  wire:confirm="Deseja realmente inativar essa multa?"
-                                  wire:click="inativarMulta({{ $multa->id }})"/>
+                        <x-button tooltip="Info. Multa" icon="o-information-circle" class="btn-outline btn-sm "
+                                  link="{{route('consultas.info', ['id' => $multa->id])}}"/>
                     </td>
                 </tr>
             @empty
@@ -342,41 +296,4 @@ layout('layouts.app');
         <livewire:multas.create/>
     </x-modal>
 
-    <x-modal wire:model.live="modal_ident_interna" class="backdrop-blur">
-        <div>
-            <h1 class=" mb-4 font-bold uppercase text-center text-gray-700 underline">IDENTIFICAÇÃO INTERNA</h1>
-            <form wire:submit.prevent="ident_Interna">
-                <div class="flex flex-col gap-2">
-                    <x-input label="Condutor: (Caso não identificado deixe em branco)"
-                             placeholder="Informe o condutor..." wire:model.live="condutor" icon="o-building-office-2"/>
-                    <x-datetime label="Data da identificação:" wire:model="data_identificacao" icon="o-calendar"
-                                type="datetime-local"/>
-                    <div class="flex flex-row justify-evenly items-center mt-2">
-                        <x-button class="btn-sm " label="FECHAR" wire:click="$set('modal_ident_interna', false)"/>
-                        <x-button class="btn-sm btn-success text-white" label="SALVAR" icon="o-check"
-                                  wire:click="ident_Interna"/>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </x-modal>
-
-    <x-modal wire:model.live="modal_ident_detran" class="backdrop-blur">
-        <div>
-            <h1 class="font-bold uppercase text-center text-gray-700 underline">IDENTIFICAÇÃO DETRAN</h1>
-            <form wire:submit.prevent="ident_Detran">
-                <div class="flex flex-col gap-2">
-                    <x-input readonly label="Condutor:" placeholder="Informe o condutor..." wire:model.live="condutor"
-                             icon="o-building-office-2"/>
-                    <x-datetime label="Data da identificação no Detran:" wire:model="data_identificacao_detran"
-                                icon="o-calendar" type="datetime-local"/>
-                    <div class="flex flex-row justify-evenly items-center mt-2">
-                        <x-button class="btn-sm " label="FECHAR" wire:click="$set('modal_ident_detran', false)"/>
-                        <x-button class="btn-sm btn-success text-white" label="SALVAR" icon="o-check"
-                                  wire:click="ident_Detran"/>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </x-modal>
 </div>

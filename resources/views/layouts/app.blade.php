@@ -110,6 +110,7 @@
                 height: 100dvh !important;
             }
         }
+
     </style>
 
     @livewireStyles
@@ -128,7 +129,7 @@
     </x-nav>
 
     <x-main with-nav full-width collapsed>
-        <x-slot:sidebar drawer="main-drawer" collapsible class="bg-white text-dark shadow-xl mr-3" collapsed>
+        <x-slot:sidebar drawer="main-drawer" collapsible class="bg-white text-dark shadow-xl mr-1" collapsed>
             <div class="hidden-when-collapsed text-center  mx-4 mt-4 font-black text-3xl text-[#003CA2]">Gestão de Multas</div>
 
             <div class="display-when-collapsed mx-4 mt-3 font-black text-2xl text-[#003CA2]">GM</div>
@@ -170,8 +171,10 @@
                             link="{{ route('admin.exports.index') }}" />
                     </x-menu-sub>
                 @endif
-                
+
                 <x-menu-item title="Painel de Multas" icon="o-clipboard-document-check" link="{{ route('dashboard') }}" />
+
+                <x-menu-item title="Consultar Finalizadas" icon="o-document-magnifying-glass" link="{{ route('consultas.index') }}" />
 
             </x-menu>
         </x-slot:sidebar>
