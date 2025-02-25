@@ -170,6 +170,49 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => Carbon::now()
             ],
 
+            [
+                'permission' => 'apps.view-any',
+                'profile_id' => 1,
+                'value' => 1,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'permission' => 'apps.create',
+                'profile_id' => 1,
+                'value' => 1,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'permission' => 'apps.update',
+                'profile_id' => 1,
+                'value' => 1,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'permission' => 'apps.view',
+                'profile_id' => 1,
+                'value' => 1,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'permission' => 'apps.delete',
+                'profile_id' => 1,
+                'value' => 1,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'permission' => 'apps.restore',
+                'profile_id' => 1,
+                'value' => 1,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+
 
             // Padrao Permissions
             [
