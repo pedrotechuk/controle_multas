@@ -42,7 +42,7 @@ $finalize = function () {
     $data = $this->validate(
         [
             'status_final' => ['required'],
-            'justificativa' => ['nullable', 'string', 'required_if:status_final,1'],
+            'justificativa' => ['nullable', 'string', 'required_unless:status_final,1'],
         ],
         [
             'status_final.required' => 'Selecione o status final.',
@@ -56,6 +56,7 @@ $finalize = function () {
         $this->multa->update([
             'status_final' => $this->all_data['status_final'],
             'justificativa' => $this->all_data['justificativa'] ?? null,
+            'data_finalizada' => Carbon::now(),
             'status' => 4,
             'updated_by' => Ad::username(),
         ]);
@@ -66,6 +67,7 @@ $finalize = function () {
 
         return redirect(route('dashboard'));
     } catch (Exception $e) {
+        dd($e->getMessage());
         return $this->error('Não foi possível finalizar a multa.');
     }
 };

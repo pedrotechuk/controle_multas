@@ -45,7 +45,7 @@ layout('layouts.app');
     <x-card shadow separator class="bg-gray-100 p-4 shadow-md rounded">
         <div class="flex justify-between items-center">
             <div>
-                <h2 class="text-xl font-bold">Editar Multa N°{{ $this->id }}</h2>
+                <h2 class="text-xl font-bold">Informações Multa N°{{ $this->id }}</h2>
                 <p class="text-gray-600">Criada em: {{ Carbon::parse($this->multa->created_at)->format('d/m/Y') }}
                     por {{ $this->multa->created_by }}</p>
             </div>

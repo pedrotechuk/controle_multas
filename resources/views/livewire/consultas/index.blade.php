@@ -53,7 +53,7 @@ mount(function () {
 });
 
 with(function () {
-    $multas = Multa::query()->orderBy('data_multa', 'desc')
+    $multas = Multa::query()->orderBy('data_finalizada', 'desc')
         ->when($this->unidade, fn($query) => $query->where('unidade', $this->unidade))
         ->when($this->data_ciencia, fn($query) => $query->whereDate('data_ciencia', $this->data_ciencia))
         ->when($this->data_multa, fn($query) => $query->whereDate('data_multa', $this->data_multa))
@@ -199,7 +199,7 @@ layout('layouts.app');
 <div>
     <div>
         <div class="flex flex-row justify-between items-center bg-gray-100 p-4 shadow rounded">
-            <h1 class="font-bold text-gray-700">Multas Cadastradas</h1>
+            <h1 class="font-bold text-gray-700">Multas Finalizadas</h1>
             <x-button class="btn-sm btn-outline" label="VER MULTAS EM ANDAMENTO" icon="o-document-text"
                       link="{{route('dashboard')}}"/>
         </div>
@@ -224,7 +224,7 @@ layout('layouts.app');
             <tr>
                 <th class="py-2 px-4 border-b">Unidade</th>
                 <th class="py-2 px-4 border-b">Data Multa</th>
-                <th class="py-2 px-4 border-b">Data Limite</th>
+                <th class="py-2 px-4 border-b">Data Finalizada</th>
                 <th class="py-2 px-4 border-b">Status Final</th>
                 <th class="py-2 px-4 border-b">Responsável</th>
                 <th class="py-2 px-4 border-b">Propriedade/Local</th>
@@ -258,7 +258,7 @@ layout('layouts.app');
                         @endswitch
                     </td>
                     <td class="py-2 px-4 border-b text-center">{{ Carbon::parse($multa->data_ciencia)->format('d/m/Y') }}</td>
-                    <td class="py-2 px-4 border-b text-center">{{ Carbon::parse($multa->data_limite)->format('d/m/Y') }}</td>
+                    <td class="py-2 px-4 border-b text-center">{{ Carbon::parse($multa->data_finalizada)->format('d/m/Y') }}</td>
                     <td class="py-2 px-4 border-b text-center">{{ $multa->status_final_model->status_final_name ?? 'N/A' }}</td>
                     <td class="py-2 px-4 border-b text-center">{{ $multa->responsavel }}</td>
                     <td class="py-2 px-4 border-b text-center">{{$multa->propriedade_model->local}}
