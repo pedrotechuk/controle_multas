@@ -20,14 +20,14 @@ return new class extends Migration
             $table->string('responsavel');
             $table->foreignId('propriedade')->constrained('propriedades')->onDelete('cascade');
             $table->foreignId('local')->constrained('propriedades')->onDelete('cascade');
-            $table->integer('auto_infracao');
-            $table->string('condutor');
-            $table->timestamp('data_identificacao');
-            $table->timestamp('data_identificacao_detran');
+            $table->string('auto_infracao');
+            $table->string('condutor')->nullable();
+            $table->timestamp('data_identificacao')->nullable();
+            $table->timestamp('data_identificacao_detran')->nullable();
             $table->foreignId('status')->nullable()->constrained('statuses')->onDelete('cascade');
             $table->foreignId('status_final')->nullable()->constrained('status_finals')->onDelete('cascade');
             $table->string('justificativa')->nullable();
-            $table->timestamp('data_finalizada');
+            $table->timestamp('data_finalizada')->nullable();
 
             $table->users_actions();
             $table->timestamps();

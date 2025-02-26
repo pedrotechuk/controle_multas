@@ -270,7 +270,7 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => Carbon::now()
             ],
             [
-                'name' => 'eduardo.barbosa',
+                'name' => 'ph',
                 'profile_id' => 1,
                 'created_by' => 'importacao',
                 'updated_by' => 'importacao',

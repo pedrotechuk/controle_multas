@@ -52,7 +52,7 @@ layout('layouts.app');
             <x-button class="btn-sm btn-outline" label="VOLTAR" icon="o-arrow-uturn-left"
                       link="{{ route('consultas.index') }}"/>
         </div>
-        <div class="grid grid-cols-4 gap-2">
+        <div class="grid grid-cols-4 gap-2 mt-4">
             <x-input readonly label="Unidade:"
                      value="{{ $this->multa->unidade == 1 ? 'Maringá' : ($this->multa->unidade == 3 ? 'Guarapuava' : ($this->multa->unidade == 7 ? 'Ponta Grossa' : ($this->multa->unidade == 10 ? 'Norte Pioneiro' : ''))) }}"/>
             <x-input readonly label="Auto Infração:" value="{{ $this->multa->auto_infracao }}"/>
@@ -63,8 +63,8 @@ layout('layouts.app');
             <x-input readonly label="Data Ciência:" value="{{ Carbon::parse($this->multa->data_ciencia)->format('d/m/Y') }}"/>
             <x-input readonly label="Data Identificação:" value="{{ Carbon::parse($this->multa->data_identificacao)->format('d/m/Y') }}"/>
             <x-input readonly label="Data Identificação Detran:" value="{{ Carbon::parse($this->multa->data_identificacao_detran)->format('d/m/Y') }}"/>
-            <x-input readonly label="Propriedade:" value="{{ $this->multa->propriedade_model->local }}"/>
-            <x-input readonly label="Local:" value="{{ $this->multa->local_model->local }}"/>
+            <x-input readonly label="Propriedade/ Local:" value="{{ $this->multa->propriedade_model->local }} / {{ $this->multa->local_model->local }}"/>
+            <x-input readonly label="Criado por:" value="{{ $this->multa->created_by}}"/>
             <x-input readonly label="Status Final:" value="{{ $this->multa->status_final_model->status_final_name }}"/>
             <div class="col-span-4">
                 <x-input readonly label="Justificativa:" value="{{ $this->multa->justificativa }}"/>

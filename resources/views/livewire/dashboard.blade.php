@@ -271,7 +271,7 @@ layout('layouts.app');
                                 @break
                         @endswitch
                     </td>
-                    <td class="py-2 px-4 border-b text-center">{{ Carbon::parse($multa->data_ciencia)->format('d/m/Y') }}</td>
+                    <td class="py-2 px-4 border-b text-center">{{ Carbon::parse($multa->data_multa)->format('d/m/Y') }}</td>
                     <td class="py-2 px-4 border-b text-center">{{ Carbon::parse($multa->data_limite)->format('d/m/Y') }}</td>
                     <td class="py-2 px-4 border-b text-center">{{ $multa->status_model->status_name ?? 'N/A' }}</td>
                     <td class="py-2 px-4 border-b text-center">{{ $multa->responsavel }}</td>

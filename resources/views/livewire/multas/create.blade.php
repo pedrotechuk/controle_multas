@@ -93,6 +93,7 @@ $save = function () {
 
         return redirect(route('dashboard'));
     } catch (Exception $e) {
+        dd($e->getMessage());
         return $this->error('Não foi possível cadastrar a multa.');
     }
 };
