@@ -5,6 +5,7 @@
 /public/storage
 /storage/*.key
 /vendor
+compose.yml
 .env
 .env.backup
 .env.local
