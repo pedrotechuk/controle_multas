@@ -353,33 +353,149 @@ class DatabaseSeeder extends Seeder
         DB::table('propriedades')->insert([
 
             [
-                'local' => 'MGA',
+                'local' => 'GPVA-GPVA',
                 'created_by' => 'importacao',
                 'updated_by' => 'importacao',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
             [
-                'local' => 'GPVA',
+                'local' => 'GPVA-MGA',
                 'created_by' => 'importacao',
                 'updated_by' => 'importacao',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
             [
-                'local' => 'NP',
+                'local' => 'GPVA-NP',
                 'created_by' => 'importacao',
                 'updated_by' => 'importacao',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
             [
-                'local' => 'PG',
+                'local' => 'GPVA-PG',
                 'created_by' => 'importacao',
                 'updated_by' => 'importacao',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
-            ]
+            ],
+
+            [
+                'local' => 'LOCALIZA-GPVA',
+                'created_by' => 'importacao',
+                'updated_by' => 'importacao',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'local' => 'LOCALIZA-MGA',
+                'created_by' => 'importacao',
+                'updated_by' => 'importacao',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'local' => 'LOCALIZA-NP',
+                'created_by' => 'importacao',
+                'updated_by' => 'importacao',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'local' => 'LOCALIZA-PG',
+                'created_by' => 'importacao',
+                'updated_by' => 'importacao',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+
+            [
+                'local' => 'MGA-GPVA',
+                'created_by' => 'importacao',
+                'updated_by' => 'importacao',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'local' => 'MGA-MGA',
+                'created_by' => 'importacao',
+                'updated_by' => 'importacao',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'local' => 'MGA-NP',
+                'created_by' => 'importacao',
+                'updated_by' => 'importacao',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'local' => 'MGA-PG',
+                'created_by' => 'importacao',
+                'updated_by' => 'importacao',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+
+            [
+                'local' => 'NP-GPVA',
+                'created_by' => 'importacao',
+                'updated_by' => 'importacao',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'local' => 'NP-MGA',
+                'created_by' => 'importacao',
+                'updated_by' => 'importacao',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'local' => 'NP-NP',
+                'created_by' => 'importacao',
+                'updated_by' => 'importacao',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'local' => 'NP-PG',
+                'created_by' => 'importacao',
+                'updated_by' => 'importacao',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+
+            [
+                'local' => 'PG-GPVA',
+                'created_by' => 'importacao',
+                'updated_by' => 'importacao',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'local' => 'PG-MGA',
+                'created_by' => 'importacao',
+                'updated_by' => 'importacao',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'local' => 'PG-NP',
+                'created_by' => 'importacao',
+                'updated_by' => 'importacao',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'local' => 'PG-PG',
+                'created_by' => 'importacao',
+                'updated_by' => 'importacao',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
 
         ]);
 

@@ -20,7 +20,7 @@ state(['modal_multa'])->modelable();
 state(['all_data' => []]);
 
 state(['unidades' => [], 'propriedades' => [], 'locais' => []]);
-state(['unidade', 'data_ciencia', 'data_multa', 'data_limite', 'responsavel', 'propriedade', 'local', 'auto_infracao']);
+state(['unidade', 'data_ciencia', 'data_multa', 'data_limite', 'responsavel', 'propriedade', 'placa', 'auto_infracao', 'cod_infracao']);
 
 mount(function () {
     if (!Gate::forUser(Auth::user())->allows('apps.view-any')) {
@@ -31,8 +31,6 @@ mount(function () {
     $this->unidades = [['id' => 1, 'name' => 'Virginia Maringá'], ['id' => 3, 'name' => 'Virgini Guarapuava'], ['id' => 7, 'name' => 'Virginia Ponta Grossa'], ['id' => 10, 'name' => 'Virginia Norte Pioneiro']];
 
     $this->propriedades = Propriedade::whereNull('deleted_at')->orderBy('local', 'asc')->get()->map(fn($propriedade) => ['id' => $propriedade->id, 'name' => $propriedade->local]);
-
-    $this->locais = Propriedade::whereNull('deleted_at')->orderBy('local', 'asc')->get()->map(fn($propriedade) => ['id' => $propriedade->id, 'name' => $propriedade->local]);
 
     $this->statuses = Status::whereNull('deleted_at')->orderBy('status_name', 'asc')->get()->map(fn($status) => ['id' => $status->id, 'name' => $status->status_name]);
 
@@ -47,11 +45,12 @@ $save = function () {
             'data_multa' => ['required', 'date'],
             'responsavel' => ['required'],
             'propriedade' => ['required'],
-            'local' => ['required'],
+            'placa' => ['nullable'],
             'auto_infracao' => [
                 'required',
                 Rule::unique('multas', 'auto_infracao')->whereNull('deleted_at'),
             ],
+            'cod_infracao' => ['required'],
         ],
         [
             'unidade.required' => 'Selecione a unidade.',
@@ -59,13 +58,15 @@ $save = function () {
             'data_multa.required' => 'Selecione a data da infração.',
             'responsavel.required' => 'Informe o responsável.',
             'propriedade.required' => 'Selecione a unidade proprietária.',
-            'local.required' => 'Selecione o local da infração.',
             'auto_infracao.required' => 'Informe o n° da auto infração.',
             'auto_infracao.unique' => 'Auto infração já utilizada.',
+            'cod_infracao.required' => 'Informe o código da infração'
         ]
     );
 
     $data['data_limite'] = Carbon::parse($data['data_multa'])->addDays(40)->format('Y-m-d');
+
+
 
     $this->all_data = array_merge($this->all_data, $data);
 
@@ -77,8 +78,9 @@ $save = function () {
             'data_limite' => $this->all_data['data_limite'],
             'responsavel' => $this->all_data['responsavel'],
             'propriedade' => $this->all_data['propriedade'],
-            'local' => $this->all_data['local'],
+            'placa' => $this->all_data['placa'],
             'auto_infracao' => $this->all_data['auto_infracao'],
+            'cod_infracao' => $this->all_data['cod_infracao'],
             'status' => 1,
             'created_by' => Ad::username(),
             'updated_by' => Ad::username(),
@@ -88,7 +90,7 @@ $save = function () {
 
         $this->reset([
             'modal_multa', 'unidade', 'data_ciencia', 'data_multa', 'data_limite',
-            'responsavel', 'propriedade', 'local', 'auto_infracao'
+            'responsavel', 'propriedade', 'placa', 'auto_infracao', 'cod_infracao'
         ]);
 
         return redirect(route('dashboard'));
@@ -114,17 +116,19 @@ layout('layouts.app');
             <x-datetime label="Data da infração:" wire:model="data_multa" icon="o-calendar"
                         type="datetime-local"/>
 
-            <div class="flex flex-row w-full justify-between">
-                <x-select label="Propriedade:" placeholder="Selecione a proprietária..." placeholder-value="0"
+            <div class="flex flex-row w-full justify-between mt-2 -mb-4">
+                <x-select label="Propriedade/Local:" placeholder="Selecione..." placeholder-value="0"
                           :options="$this->propriedades" wire:model.live="propriedade" icon="o-building-office"/>
-                <x-select label="Local:" placeholder="Selecione o local..." placeholder-value="0"
-                          :options="$this->locais" wire:model.live="local" icon="o-building-office"/>
-            </div>
 
+                <x-input label="Placa do Veículo" wire:model="placa"
+                         class="uppercase !flex !flex-1" icon="m-table-cells" hint="Opcional" />
+            </div>
             <x-input label="Responsável:" wire:model="responsavel" placeholder="Ex: João da Silva" icon="o-user"/>
             <x-input label="N° Auto Infração:" wire:model.live.debounce.300ms="auto_infracao"
                      oninput="this.value = this.value.toUpperCase()"
                      placeholder="Digite o n° da auto infração" icon="o-clipboard-document-list"/>
+            <x-input label="Código da infração:" type='number' wire:model="cod_infracao" placeholder="12345...."
+                     icon='o-computer-desktop' />
 
             <div class="flex flex-row justify-evenly items-center mt-2">
                 <x-button class="btn-sm " label="VOLTAR" icon="m-arrow-uturn-left"

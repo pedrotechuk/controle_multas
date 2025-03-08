@@ -24,20 +24,18 @@ state(['modal_ident_detran' => false]);
 
 
 state(['unidades' => [], 'propriedades' => [], 'statuses' => [], 'status_finals' => []]);
-state(['filters', 'unidade', 'multa', 'data_ciencia', 'data_multa', 'data_limite', 'responsavel', 'propriedade', 'local', 'auto_infracao', 'condutor', 'data_identificacao', 'data_identificacao_detran', 'status', 'status_final']);
+state(['filters', 'unidade', 'multa', 'data_ciencia', 'data_multa', 'data_limite', 'responsavel', 'propriedade', 'auto_infracao', 'condutor', 'condutor_modal', 'data_identificacao', 'identificador_interno', 'data_identificacao_detran', 'identificador_detran', 'status', 'status_final']);
 
 
 mount(function () {
     if (!Gate::forUser(Auth::user())->allows('apps.view-any')) {
         return redirect()->route('errors.403');
     }
-    $this->multa = Multa::find($this->id);
+    $this->multa = Multa::with('infracao')->find($this->id);
 
     $this->unidades = [['id' => 1, 'name' => 'Virginia Maringá'], ['id' => 3, 'name' => 'Virgini Guarapuava'], ['id' => 7, 'name' => 'Virginia Ponta Grossa'], ['id' => 10, 'name' => 'Virginia Norte Pioneiro']];
 
     $this->propriedades = Propriedade::whereNull('deleted_at')->orderBy('local', 'asc')->get()->map(fn($propriedade) => ['id' => $propriedade->id, 'name' => $propriedade->local]);
-
-    $this->locais = Propriedade::whereNull('deleted_at')->orderBy('local', 'asc')->get()->map(fn($propriedade) => ['id' => $propriedade->id, 'name' => $propriedade->local]);
 
     $this->statuses = Status::whereNull('deleted_at')->orderBy('id', 'asc')->get()->map(fn($status) => ['id' => $status->id, 'name' => $status->status_name]);
 
@@ -47,20 +45,23 @@ mount(function () {
 
     $this->unidade = $filters['unidade'] ?? [];
     $this->data_multa = $filters['data_multa'] ?? null;
-    $this->responsavel = $filters['responsavel'] ?? null;
-    $this->condutor = $filters['condutor'] ?? null;
+    $this->data_limite = $filters['data_limite'] ?? null;
     $this->status = $filters['status'] ?? null;
+    $this->responsavel = $filters['responsavel'] ?? null;
+    $this->propriedade = $filters['propriedade'] ?? null;
+    $this->auto_infracao = $filters['auto_infracao'] ?? null;
+    $this->condutor = $filters['condutor'] ?? null;
+
 });
 
 with(function () {
-    $multas = Multa::query()->orderBy('data_multa', 'desc')
+    $multas = Multa::query()->orderBy('data_limite', 'asc')
         ->when($this->unidade, fn($query) => $query->where('unidade', $this->unidade))
         ->when($this->data_ciencia, fn($query) => $query->whereDate('data_ciencia', $this->data_ciencia))
         ->when($this->data_multa, fn($query) => $query->whereDate('data_multa', $this->data_multa))
         ->when($this->data_limite, fn($query) => $query->whereDate('data_limite', $this->data_limite))
         ->when($this->responsavel, fn($query) => $query->where('responsavel', 'LIKE', "%{$this->responsavel}%"))
         ->when($this->propriedade, fn($query) => $query->where('propriedade', $this->propriedade))
-        ->when($this->local, fn($query) => $query->where('propriedade', $this->local))
         ->when($this->auto_infracao, fn($query) => $query->where('auto_infracao', 'LIKE', "%{$this->auto_infracao}%"))
         ->when($this->condutor, fn($query) => $query->where('condutor', 'LIKE', "%{$this->condutor}%"))
         ->when($this->data_identificacao, fn($query) => $query->whereDate('data_identificacao', $this->data_identificacao))
@@ -78,16 +79,20 @@ $filtrar = function () {
     Session::put('filters', [
         'unidade' => $this->unidade,
         'data_multa' => $this->data_multa,
+        'data_limite' => $this->data_limite,
+        'status' => $this->status,
         'responsavel' => $this->responsavel,
+        'propriedade' => $this->propriedade,
+        'auto_infracao' => $this->auto_infracao,
         'condutor' => $this->condutor,
-        'status' => $this->status
+
     ]);
 };
 
 $resetarFiltros = function() {
     Session::forget('filters');
 
-    return $this->reset(['unidade', 'data_multa', 'responsavel', 'condutor', 'status']);
+    return $this->reset(['unidade', 'data_multa', 'data_limite', 'status', 'responsavel', 'propriedade', 'auto_infracao', 'condutor']);
 };
 
 $inativarMulta = function ($id) {
@@ -111,7 +116,7 @@ $inativarMulta = function ($id) {
 $ident_Interna = function () {
     $data = $this->validate(
         [
-            'condutor' => ['nullable', 'string'],
+            'condutor_modal' => ['nullable', 'string'],
             'data_identificacao' => ['required', 'date'],
         ],
         [
@@ -123,15 +128,15 @@ $ident_Interna = function () {
 
     try {
         $this->multa->update([
-            'condutor' => $this->all_data['condutor'] ?: 'Não Identificado',
+            'condutor' => $this->all_data['condutor_modal'] ?: 'Não Identificado',
             'data_identificacao' => $this->all_data['data_identificacao'],
             'status' => 2,
-            'updated_by' => Ad::username(),
+            'identificador_interno' => Ad::username(),
         ]);
 
         $this->success('Identificação interna realizada com sucesso!');
 
-        $this->reset(['condutor', 'data_identificacao']);
+        $this->reset(['condutor_modal', 'data_identificacao']);
 
         return redirect(route('dashboard'));
     } catch (Exception $e) {
@@ -156,7 +161,7 @@ $ident_Detran = function () {
         $this->multa->update([
             'data_identificacao_detran' => $this->all_data['data_identificacao_detran'],
             'status' => 3,
-            'updated_by' => Ad::username(),
+            'identificador_detran' => Ad::username(),
         ]);
 
         $this->success('Identificação Detran realizada com sucesso!');
@@ -218,16 +223,18 @@ layout('layouts.app');
                       wire:click="openModalMulta"/>
         </div>
 
-        <div class="grid grid-cols-7 gap-4 bg-gray-100 p-4 shadow rounded mt-2">
+        <div class="grid grid-cols-5 gap-4 bg-gray-100 p-4 shadow rounded mt-2">
             <x-select label="Filtrar por unidade:" :options="$this->unidades" wire:model="unidade"
                       placeholder="Selecione uma unidade..." placeholder-value="0" />
             <x-datetime label="Filtrar por Data da Multa:" wire:model="data_multa" placeholder="Data Multa" />
-            <x-input label="Filtrar por responsável:" placeholder="Nome do responsável" wire:model="responsavel" />
-            <x-input label="Filtrar por condutor:" placeholder="Nome do condutor" wire:model="condutor" />
-
+            <x-datetime label="Filtrar por Data Limite:" wire:model="data_limite" placeholder="Data Limite" />
             <x-select label="Filtrar por status:" :options="$this->statuses->filter(fn($status) => !in_array($status['id'], [4, 5]))"
                       wire:model="status" placeholder="Selecione um status..." placeholder-value="0" option-label="name" option-value="id"/>
-
+            <x-input label="Filtrar por responsável:" placeholder="Nome do responsável..." wire:model="responsavel"/>
+            <x-select label="Filtrar por Propriedade/ Local:" :options="$this->propriedades" wire:model="propriedade"
+                      placeholder="Selecione a propriedade/local" placeholder-value="0" />
+            <x-input label="Filtrar por N° Auto Infração:" placeholder="N° Auto Infração" wire:model="auto_infracao"/>
+            <x-input label="Filtrar por condutor:" placeholder="Nome do condutor..." wire:model.lazy="condutor" />
             <x-button class="btn-outline mt-7" icon="o-x-circle" label="LIMPAR FILTROS" wire:click="resetarFiltros" />
             <x-button class="btn-outline mt-7" icon="o-adjustments-horizontal" label="FILTRAR"
                       wire:click="filtrar" />
@@ -239,6 +246,7 @@ layout('layouts.app');
                 <th class="py-2 px-4 border-b">Unidade</th>
                 <th class="py-2 px-4 border-b">Data Multa</th>
                 <th class="py-2 px-4 border-b">Data Limite</th>
+                <th class="py-2 px-4 border-b">Dias Restantes</th>
                 <th class="py-2 px-4 border-b">Status</th>
                 <th class="py-2 px-4 border-b">Responsável</th>
                 <th class="py-2 px-4 border-b">Propriedade/Local</th>
@@ -272,12 +280,42 @@ layout('layouts.app');
                         @endswitch
                     </td>
                     <td class="py-2 px-4 border-b text-center">{{ Carbon::parse($multa->data_multa)->format('d/m/Y') }}</td>
-                    <td class="py-2 px-4 border-b text-center">{{ Carbon::parse($multa->data_limite)->format('d/m/Y') }}</td>
+                    <td class="py-2 px-4 border-b text-center
+                        @if ($multa->status_model->status_id != 4 && now()->greaterThan(Carbon::parse($multa->data_limite)))
+                            text-red-500
+                        @else
+                            text-green-700
+                        @endif">
+                        {{ Carbon::parse($multa->data_limite)->format('d/m/Y') }}
+                    </td>
+                    <td class="py-2 px-4 border-b text-center">
+                        @php
+                            $dataLimite = Carbon::parse($multa->data_limite);
+                            $diasRestantes = now()->diffInDays($dataLimite, false);
+                        @endphp
+
+                        @if ($diasRestantes < 0)
+                            <x-button icon="o-exclamation-triangle" class="btn-ghost text-error rounded-full" tooltip="Multa em atraso!"/>
+                        @elseif ($diasRestantes < 5)
+                            <span class="text-red-600">{{ $diasRestantes }}</span>
+                        @elseif ($diasRestantes < 10)
+                            <span class="text-orange-500">{{ $diasRestantes }}</span>
+                        @else
+                            <span class="text-green-700">{{ $diasRestantes }}</span>
+                        @endif
+                    </td>
+
                     <td class="py-2 px-4 border-b text-center">{{ $multa->status_model->status_name ?? 'N/A' }}</td>
                     <td class="py-2 px-4 border-b text-center">{{ $multa->responsavel }}</td>
-                    <td class="py-2 px-4 border-b text-center">{{$multa->propriedade_model->local}}
-                        - {{ $multa->local_model->local }}</td>
-                    <td class="py-2 px-4 border-b text-center">{{ $multa->auto_infracao }}</td>
+                    <td class="py-2 px-4 border-b text-center">{{$multa->propriedade_model->local}}</td>
+                    <td class="py-2 px-4 border-b text-center relative group cursor-pointer">
+                        <span>{{ $multa->auto_infracao }}</span>
+                        <div class="absolute left-1/2 transform -translate-x-1/2  translate-y-2  bottom-full
+                            hidden group-hover:block bg-gray-100 text-gray-800 font-semibold text-sm
+                            px-2 py-1 rounded shadow-lg">
+                                        Ver detalhes
+                        </div>
+                    </td>
                     <td class="py-2 px-4 border-b text-center">
                         @if ($multa->condutor)
                             {{ $multa->condutor }}
@@ -285,7 +323,6 @@ layout('layouts.app');
                             <span class="text-orange-500 ">Pendente</span>
                         @endif
                     </td>
-                    {{--                    <td class="py-2 px-4 border-b text-center">{{ $multa->status_final_model->status_final_name }}</td>--}}
 
                     <td class="py-2 px-4 border-b text-center">
                         <x-button
@@ -348,7 +385,7 @@ layout('layouts.app');
             <form wire:submit.prevent="ident_Interna">
                 <div class="flex flex-col gap-2">
                     <x-input label="Condutor: (Caso não identificado deixe em branco)"
-                             placeholder="Informe o condutor..." wire:model.live="condutor" icon="o-building-office-2"/>
+                             placeholder="Informe o condutor..." wire:model="condutor_modal" icon="o-building-office-2"/>
                     <x-datetime label="Data da identificação:" wire:model="data_identificacao" icon="o-calendar"
                                 type="datetime-local"/>
                     <div class="flex flex-row justify-evenly items-center mt-2">

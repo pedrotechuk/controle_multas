@@ -20,15 +20,19 @@ class Multa extends Model
         'data_limite',
         'responsavel',
         'propriedade',
-        'local',
+        'placa',
         'auto_infracao',
+        'cod_infracao',
         'condutor',
         'data_identificacao',
+        'identificador_interno',
         'data_identificacao_detran',
+        'identificador_detran',
         'status',
         'status_final',
         'justificativa',
         'data_finalizada',
+        'finalizado_por',
         'created_by',
         'updated_by',
         'deleted_by',
@@ -43,14 +47,14 @@ class Multa extends Model
         'data_identificacao_detran' => 'datetime',
     ];
 
+    public function infracao()
+    {
+        return $this->hasOne(Infracao::class, 'cod', 'cod_infracao');
+    }
+
     public function propriedade_model()
     {
         return $this->belongsTo(Propriedade::class, 'propriedade', 'id');
-    }
-
-    public function local_model(): HasOne
-    {
-        return $this->hasOne(Propriedade::class, 'id', 'local');
     }
 
     public function status_model(): HasOne

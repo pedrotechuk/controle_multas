@@ -19,15 +19,20 @@ return new class extends Migration
             $table->timestamp('data_limite');
             $table->string('responsavel');
             $table->foreignId('propriedade')->constrained('propriedades')->onDelete('cascade');
-            $table->foreignId('local')->constrained('propriedades')->onDelete('cascade');
+            $table->string('placa')->nullable();
             $table->string('auto_infracao');
+            $table->unsignedBigInteger('cod_infracao');
+            $table->foreign('cod_infracao')->references('cod')->on('infracoes')->onDelete('cascade');
             $table->string('condutor')->nullable();
             $table->timestamp('data_identificacao')->nullable();
+            $table->string('identificador_interno')->nullable();
             $table->timestamp('data_identificacao_detran')->nullable();
+            $table->string('identificador_detran')->nullable();
             $table->foreignId('status')->nullable()->constrained('statuses')->onDelete('cascade');
             $table->foreignId('status_final')->nullable()->constrained('status_finals')->onDelete('cascade');
             $table->string('justificativa')->nullable();
             $table->timestamp('data_finalizada')->nullable();
+            $table->string('finalizado_por')->nullable();
 
             $table->users_actions();
             $table->timestamps();

@@ -47,9 +47,12 @@ mount(function () {
 
     $this->unidade = $filters['unidade'] ?? [];
     $this->data_multa = $filters['data_multa'] ?? null;
-    $this->responsavel = $filters['responsavel'] ?? null;
-    $this->condutor = $filters['condutor'] ?? null;
+    $this->data_limite = $filters['data_limite'] ?? null;
     $this->status_final = $filters['status_final'] ?? null;
+    $this->responsavel = $filters['responsavel'] ?? null;
+    $this->propriedade = $filters['propriedade'] ?? null;
+    $this->auto_infracao = $filters['auto_infracao'] ?? null;
+    $this->condutor = $filters['condutor'] ?? null;
 });
 
 with(function () {
@@ -78,16 +81,21 @@ $filtrar = function () {
     Session::put('filters', [
         'unidade' => $this->unidade,
         'data_multa' => $this->data_multa,
+        'data_limite' => $this->data_limite,
+        'status_final' => $this->status_final,
         'responsavel' => $this->responsavel,
+        'propriedade' => $this->propriedade,
+        'auto_infracao' => $this->auto_infracao,
         'condutor' => $this->condutor,
-        'status_final' => $this->status_final
+
     ]);
 };
 
 $resetarFiltros = function() {
     Session::forget('filters');
 
-    return $this->reset(['unidade', 'data_multa', 'responsavel', 'condutor', 'status_final']);
+    return $this->reset(['unidade', 'data_multa', 'data_limite', 'status_final', 'responsavel', 'propriedade', 'auto_infracao', 'condutor']);
+
 };
 
 $inativarMulta = function ($id) {
@@ -204,16 +212,18 @@ layout('layouts.app');
                       link="{{route('dashboard')}}"/>
         </div>
 
-        <div class="grid grid-cols-7 gap-4 bg-gray-100 p-4 shadow rounded mt-2">
+        <div class="grid grid-cols-5 gap-4 bg-gray-100 p-4 shadow rounded mt-2">
             <x-select label="Filtrar por unidade:" :options="$this->unidades" wire:model="unidade"
                       placeholder="Selecione uma unidade..." placeholder-value="0" />
             <x-datetime label="Filtrar por Data da Multa:" wire:model="data_multa" placeholder="Data Multa" />
-            <x-input label="Filtrar por responsável:" placeholder="Nome do responsável" wire:model="responsavel" />
-            <x-input label="Filtrar por condutor:" placeholder="Nome do condutor" wire:model="condutor" />
-
-            <x-select label="Filtrar por status final:" :options="$this->status_finals"
-                      wire:model="status_final" placeholder="Selecione um status..." />
-
+            <x-datetime label="Filtrar por Data Limite:" wire:model="data_limite" placeholder="Data Limite" />
+            <x-select label="Filtrar por status:" :options="$this->statuses->filter(fn($status) => !in_array($status['id'], [4, 5]))"
+                      wire:model="status" placeholder="Selecione um status..." placeholder-value="0" option-label="name" option-value="id"/>
+            <x-input label="Filtrar por responsável:" placeholder="Nome do responsável..." wire:model="responsavel"/>
+            <x-select label="Filtrar por Propriedade/ Local:" :options="$this->propriedades" wire:model="propriedade"
+                      placeholder="Selecione a propriedade/local" placeholder-value="0" />
+            <x-input label="Filtrar por N° Auto Infração:" placeholder="N° Auto Infração" wire:model="auto_infracao"/>
+            <x-input label="Filtrar por condutor:" placeholder="Nome do condutor..." wire:model.lazy="condutor" />
             <x-button class="btn-outline mt-7" icon="o-x-circle" label="LIMPAR FILTROS" wire:click="resetarFiltros" />
             <x-button class="btn-outline mt-7" icon="o-adjustments-horizontal" label="FILTRAR"
                       wire:click="filtrar" />
@@ -261,8 +271,7 @@ layout('layouts.app');
                     <td class="py-2 px-4 border-b text-center">{{ Carbon::parse($multa->data_finalizada)->format('d/m/Y') }}</td>
                     <td class="py-2 px-4 border-b text-center">{{ $multa->status_final_model->status_final_name ?? 'N/A' }}</td>
                     <td class="py-2 px-4 border-b text-center">{{ $multa->responsavel }}</td>
-                    <td class="py-2 px-4 border-b text-center">{{$multa->propriedade_model->local}}
-                        - {{ $multa->local_model->local }}</td>
+                    <td class="py-2 px-4 border-b text-center">{{$multa->propriedade_model->local}}</td>
                     <td class="py-2 px-4 border-b text-center">{{ $multa->auto_infracao }}</td>
                     <td class="py-2 px-4 border-b text-center">
                         @if ($multa->condutor)

@@ -25,14 +25,13 @@ mount(function ($id) {
     if (!Gate::forUser(Auth::user())->allows('apps.view-any')) {
         return redirect()->route('errors.403');
     }
-    $this->multa = Multa::with(['propriedade_model', 'local_model'])->findOrFail($id);
+    $this->multa = Multa::with(['propriedade_model'])->findOrFail($id);
 
     $this->id = $this->multa->id;
     $this->unidade = $this->multa->unidade;
     $this->data_ciencia = $this->multa->data_ciencia;
     $this->data_multa = $this->multa->data_multa;
     $this->propriedade = $this->multa->propriedade_model->id ?? null;
-    $this->local = $this->multa->local_model->id ?? null;
     $this->responsavel = $this->multa->responsavel;
     $this->auto_infracao = $this->multa->auto_infracao;
     $this->condutor = $this->multa->condutor;
@@ -40,7 +39,6 @@ mount(function ($id) {
     $this->data_identificacao_detran = $this->multa->data_identificacao_detran;
     $this->unidades = [['id' => 1, 'name' => 'Virginia Maringá'], ['id' => 3, 'name' => 'Virginia Guarapuava'], ['id' => 7, 'name' => 'Virginia Ponta Grossa'], ['id' => 10, 'name' => 'Virginia Norte Pioneiro']];
     $this->propriedades = Propriedade::whereNull('deleted_at')->orderBy('local', 'asc')->get()->map(fn($propriedade) => ['id' => $propriedade->id, 'name' => $propriedade->local])->toArray();
-    $this->locais = Propriedade::whereNull('deleted_at')->orderBy('local', 'asc')->get()->map(fn($local) => ['id' => $local->id, 'name' => $local->local])->toArray();
     $this->statuses = Status::whereNull('deleted_at')->orderBy('status_name', 'asc')->get()->map(fn($status) => ['id' => $status->id, 'name' => $status->status_name])->toArray();
     $this->status_finals = StatusFinal::whereNull('deleted_at')->orderBy('status_final_name', 'asc')->get()->map(fn($status_final) => ['id' => $status_final->id, 'name' => $status_final->status_final_name])->toArray();
 });
@@ -51,7 +49,6 @@ rules([
     'data_multa' => ['nullable'],
     'responsavel' => ['nullable'],
     'propriedade' => ['nullable'],
-    'local' => ['nullable'],
     'auto_infracao' => ['nullable'],
     'condutor' => ['nullable'],
     'data_identificacao' => ['nullable'],
@@ -61,6 +58,10 @@ rules([
 $update = function () {
     try {
         $data = $this->validate();
+
+        if (isset($data['data_multa'])) {
+            $data['data_limite'] = Carbon::parse($data['data_multa'])->addDays(40)->format('Y-m-d\TH:i');
+        }
 
         foreach ($data as $key => $value) {
             if ($value === '') {
@@ -100,10 +101,8 @@ layout('layouts.app');
                             type="datetime-local"/>
                 <x-datetime label="Data da infração:" wire:model="data_multa" icon="o-calendar"
                             type="datetime-local"/>
-                <x-select label="Propriedade:" placeholder="Selecione a proprietária..." placeholder-value="0"
+                <x-select label="Propriedade/Local:" placeholder="Selecione a propriedade/local..." placeholder-value="0"
                           :options="$this->propriedades" wire:model.live="propriedade" icon="o-building-office"/>
-                <x-select label="Local:" placeholder="Selecione o local..." placeholder-value="0"
-                          :options="$this->locais" wire:model.live="local" icon="o-building-office"/>
                 <x-input label="Responsável:" wire:model="responsavel" placeholder="Ex: João da Silva" icon="o-user"/>
                 <x-input label="N° Auto Infração:" wire:model.live.debounce.300ms="auto_infracao"
                          oninput="this.value = this.value.toUpperCase()"

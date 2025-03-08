@@ -19,13 +19,13 @@ state(['id'])->url();
 state(['all_data' => []]);
 
 state(['unidades' => [], 'propriedades' => [], 'locais' => [], 'status_finals' => [], 'justificativa' => [], 'verifyStatusFinal' => []]);
-state([ 'multa', 'status_final', 'unidade', 'data_ciencia', 'justificativa', 'data_multa', 'data_limite', 'responsavel', 'propriedade', 'local', 'auto_infracao']);
+state([ 'multa', 'status_final', 'unidade', 'data_ciencia', 'justificativa', 'data_multa', 'data_limite', 'responsavel', 'propriedade', 'auto_infracao', 'finalizado_por']);
 
 mount(function () {
     if (!Gate::forUser(Auth::user())->allows('apps.view-any')) {
         return redirect()->route('errors.403');
     }
-    $this->multa = Multa::with(['propriedade_model', 'local_model'])->find($this->id);
+    $this->multa = Multa::with(['propriedade_model'])->find($this->id);
 
     $this->unidades = [['id' => 1, 'name' => 'Virginia Maringá'], ['id' => 3, 'name' => 'Virgini Guarapuava'], ['id' => 7, 'name' => 'Virginia Ponta Grossa'], ['id' => 10, 'name' => 'Virginia Norte Pioneiro']];
 
@@ -58,7 +58,7 @@ $finalize = function () {
             'justificativa' => $this->all_data['justificativa'] ?? null,
             'data_finalizada' => Carbon::now(),
             'status' => 4,
-            'updated_by' => Ad::username(),
+            'finalizado_por' => Ad::username(),
         ]);
 
         $this->success('Multa finalizada com sucesso!');
@@ -67,7 +67,6 @@ $finalize = function () {
 
         return redirect(route('dashboard'));
     } catch (Exception $e) {
-        dd($e->getMessage());
         return $this->error('Não foi possível finalizar a multa.');
     }
 };
@@ -91,7 +90,6 @@ layout('layouts.app');
             <x-input readonly label="Data Identificação:" value="{{ Carbon::parse($this->multa->data_identificacao)->format('d/m/Y') }}"/>
             <x-input readonly label="Data Identificação Detran:" value="{{ Carbon::parse($this->multa->data_identificacao_detran)->format('d/m/Y') }}"/>
             <x-input readonly label="Propriedade:" value="{{ $this->multa->propriedade_model->local }}"/>
-            <x-input readonly label="Local:" value="{{ $this->multa->local_model->local }}"/>
         </div>
     </x-card>
 
