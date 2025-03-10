@@ -15,7 +15,6 @@ uses([Toast::class]);
 
 state(['id'])->url();
 
-
 state(['all_data' => []]);
 
 state(['unidades' => [], 'propriedades' => [], 'locais' => [], 'status_finals' => [], 'justificativa' => [], 'verifyStatusFinal' => []]);
@@ -70,9 +69,15 @@ layout('layouts.app');
             <x-input readonly label="Propriedade/ Local:" value="{{ $this->multa->propriedade_model->local }}"/>
             <x-input readonly label="Status Final:" value="{{ $this->multa->status_final_model->status_final_name }}"/>
             <x-input readonly label="Finalizado por:" value="{{ $this->multa->finalizado_por}}"/>
-            <div class="col-span-4">
+            <x-input readonly label="Código da infração:" value="{{ $this->multa->cod_infracao }}"/>
+
+            <div class="col-span-3">
                 <x-input readonly label="Justificativa:" value="{{ $this->multa->justificativa }}"/>
             </div>
+
+            <x-button class="btn-outline mt-7" tooltip="Detalhes da infração." icon="o-information-circle" label="DETALHES DA INFRAÇÃO"
+                      link="{{ route('multas.info', ['id' => $this->multa->id]) }}"/>
+
         </div>
     </x-card>
 </div>

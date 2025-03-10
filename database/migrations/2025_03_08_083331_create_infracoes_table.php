@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('infracoes', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('cod')->unique();
-            $table->string('responsavel')->nullable();
             $table->string('infracao')->nullable();
+            $table->string('responsavel')->nullable();
             $table->decimal('valor', 10, 2);
             $table->string('orgao_atuador')->nullable();
             $table->string('art_ctb')->nullable();
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('infracaos');
+        Schema::dropIfExists('infracoes');
     }
 };

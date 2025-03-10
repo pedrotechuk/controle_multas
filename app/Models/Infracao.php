@@ -9,10 +9,12 @@ class Infracao extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['cod', 'cod_infracao', 'responsavel', 'valor', 'orgao_atuador', 'art_ctb', 'pontos', 'gravidade'];
+    protected $table = 'infracoes';
 
-    public function multa()
+    protected $fillable = ['cod', 'infracao', 'responsavel', 'valor', 'orgao_atuador', 'art_ctb', 'pontos', 'gravidade'];
+
+    public function multas()
     {
-        return $this->belongsTo(Multa::class, 'cod', 'cod_infracao');
+        return $this->hasMany(Multa::class, 'cod_infracao', 'cod');
     }
 }

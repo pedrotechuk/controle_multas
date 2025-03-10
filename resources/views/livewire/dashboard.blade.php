@@ -282,9 +282,9 @@ layout('layouts.app');
                     <td class="py-2 px-4 border-b text-center">{{ Carbon::parse($multa->data_multa)->format('d/m/Y') }}</td>
                     <td class="py-2 px-4 border-b text-center
                         @if ($multa->status_model->status_id != 4 && now()->greaterThan(Carbon::parse($multa->data_limite)))
-                            text-red-500
+                            text-red-500 font-semibold
                         @else
-                            text-green-700
+                            text-green-600 font-semibold
                         @endif">
                         {{ Carbon::parse($multa->data_limite)->format('d/m/Y') }}
                     </td>
@@ -295,13 +295,13 @@ layout('layouts.app');
                         @endphp
 
                         @if ($diasRestantes < 0)
-                            <x-button icon="o-exclamation-triangle" class="btn-ghost text-error rounded-full" tooltip="Multa em atraso!"/>
+                            <x-button icon="o-exclamation-triangle" class="btn-ghost text-error rounded-full " tooltip="Multa em atraso!"/>
                         @elseif ($diasRestantes < 5)
-                            <span class="text-red-600">{{ $diasRestantes }}</span>
+                            <span class="text-red-600 font-semibold">{{ $diasRestantes }}</span>
                         @elseif ($diasRestantes < 10)
-                            <span class="text-orange-500">{{ $diasRestantes }}</span>
+                            <span class="text-orange-500 font-semibold">{{ $diasRestantes }}</span>
                         @else
-                            <span class="text-green-700">{{ $diasRestantes }}</span>
+                            <span class="text-green-600 font-semibold">{{ $diasRestantes }}</span>
                         @endif
                     </td>
 
@@ -309,18 +309,20 @@ layout('layouts.app');
                     <td class="py-2 px-4 border-b text-center">{{ $multa->responsavel }}</td>
                     <td class="py-2 px-4 border-b text-center">{{$multa->propriedade_model->local}}</td>
                     <td class="py-2 px-4 border-b text-center relative group cursor-pointer">
-                        <span>{{ $multa->auto_infracao }}</span>
-                        <div class="absolute left-1/2 transform -translate-x-1/2  translate-y-2  bottom-full
-                            hidden group-hover:block bg-gray-100 text-gray-800 font-semibold text-sm
-                            px-2 py-1 rounded shadow-lg">
-                                        Ver detalhes
-                        </div>
+                        <a href="{{ route('multas.info', ['id' => $multa->id]) }}">{{ $multa->auto_infracao }}</a>
+                        <x-button tooltip="Info. Multa" icon="o-information-circle" class="btn-ghost btn-sm rounded-full -ms-1"
+                                  link="{{route('multas.info', ['id' => $multa->id])}}"/>
+{{--                        <div class="absolute left-1/2 transform -translate-x-1/2  translate-y-2  bottom-full--}}
+{{--                            hidden group-hover:block bg-gray-100 text-gray-800 font-semibold text-sm--}}
+{{--                            px-2 py-1 rounded shadow-lg">--}}
+{{--                            <a href="{{ route('multas.info', ['id' => $multa->id]) }}">Ver detalhes</a>--}}
+{{--                        </div>--}}
                     </td>
                     <td class="py-2 px-4 border-b text-center">
                         @if ($multa->condutor)
                             {{ $multa->condutor }}
                         @else
-                            <span class="text-orange-500 ">Pendente</span>
+                            <span class="text-orange-500 font-semibold">Pendente</span>
                         @endif
                     </td>
 

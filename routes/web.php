@@ -53,6 +53,7 @@ Route::prefix('/admin')->group(function () {
 Route::prefix('/multas')->group(function (){
     Volt::route('/finalizar/{id}', 'multas.finalize')->middleware(['auth', 'verified'])->name('multas.finalize');
     Volt::route('/editar/{id}', 'multas.update')->middleware(['auth', 'verified'])->name('multas.update');
+    Volt::route('/info/{id}', 'multas.info')->middleware(['auth', 'verified'])->name('multas.info');
 });
 
 Route::prefix('/consultas')->group(function (){
