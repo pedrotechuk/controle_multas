@@ -11,14 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('nao_descontados', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
-            $table->string('nome_completo');
-            $table->foreignId('profile_id')->nullable()->constrained('profiles')->onDelete('cascade');
-            $table->string('created_by');
-            $table->string('updated_by');
-            $table->string('deleted_by')->nullable();
+            $table->string('justificativa');
+
+            $table->users_actions();
             $table->timestamps();
             $table->timestamp('deleted_at')->nullable();
         });
@@ -29,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('nao_descontados');
     }
 };

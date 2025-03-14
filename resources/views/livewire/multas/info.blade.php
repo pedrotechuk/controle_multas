@@ -53,7 +53,7 @@ layout('layouts.app');
                     por {{ $this->multa->created_by }}</p>
             </div>
             <x-button class="btn-sm btn-outline" label="VOLTAR" icon="o-arrow-uturn-left"
-                      link="{{ route('dashboard') }}"/>
+                      @click="window.history.back()"/>
         </div>
         <div class="grid grid-cols-6 gap-2 mt-4">
             <x-input readonly label="Responsável:" value="{{$this->multa->infracao->responsavel}}"/>

@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\User;
 use Carbon\Carbon;
 use App\Classes\Ad;
 use Illuminate\Validation\Rule;
@@ -19,7 +20,7 @@ state(['modal_multa'])->modelable();
 
 state(['all_data' => []]);
 
-state(['unidades' => [], 'propriedades' => [], 'locais' => []]);
+state(['unidades' => [], 'propriedades' => [], 'usuarios' => []]);
 state(['unidade', 'data_ciencia', 'data_multa', 'data_limite', 'responsavel', 'propriedade', 'placa', 'auto_infracao', 'cod_infracao']);
 
 mount(function () {
@@ -29,6 +30,8 @@ mount(function () {
     $this->multa = Multa::find($this->id);
 
     $this->unidades = [['id' => 1, 'name' => 'Virginia Maringá'], ['id' => 3, 'name' => 'Virgini Guarapuava'], ['id' => 7, 'name' => 'Virginia Ponta Grossa'], ['id' => 10, 'name' => 'Virginia Norte Pioneiro']];
+
+    $this->usuarios = User::whereNull('deleted_at')->orderBy('nome_completo', 'asc')->get()->map(fn($usuario) => ['id' => $usuario->name, 'name' => $usuario->nome_completo]);
 
     $this->propriedades = Propriedade::whereNull('deleted_at')->orderBy('local', 'asc')->get()->map(fn($propriedade) => ['id' => $propriedade->id, 'name' => $propriedade->local]);
 
@@ -67,7 +70,6 @@ $save = function () {
     $data['data_limite'] = Carbon::parse($data['data_multa'])->addDays(40)->format('Y-m-d');
 
 
-
     $this->all_data = array_merge($this->all_data, $data);
 
     try {
@@ -95,6 +97,7 @@ $save = function () {
 
         return redirect(route('dashboard'));
     } catch (Exception $e) {
+        dd($e->getMessage());
         return $this->error('Não foi possível cadastrar a multa.');
     }
 };
@@ -120,14 +123,15 @@ layout('layouts.app');
                           :options="$this->propriedades" wire:model.live="propriedade" icon="o-building-office"/>
 
                 <x-input label="Placa do Veículo" wire:model="placa"
-                         class="uppercase !flex !flex-1" icon="m-table-cells" hint="Opcional" />
+                         class="uppercase !flex !flex-1" icon="m-table-cells" hint="Opcional"/>
             </div>
-            <x-input label="Responsável:" wire:model="responsavel" placeholder="Ex: João da Silva" icon="o-user"/>
+            <x-select label="Responsável:" wire:model="responsavel" placeholder="Selecione o responsável..." placeholder-value="0"
+                      :options="$this->usuarios" wire:model.live="responsavel" icon="o-user"/>
             <x-input label="N° Auto Infração:" wire:model.live.debounce.300ms="auto_infracao"
                      oninput="this.value = this.value.toUpperCase()"
                      placeholder="Digite o n° da auto infração" icon="o-clipboard-document-list"/>
             <x-input label="Código da infração:" type='number' wire:model="cod_infracao" placeholder="12345...."
-                     icon='o-computer-desktop' />
+                     icon='o-computer-desktop'/>
 
             <div class="flex flex-row justify-evenly items-center mt-2">
                 <x-button class="btn-sm " label="VOLTAR" icon="m-arrow-uturn-left"

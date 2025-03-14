@@ -73,6 +73,7 @@ layout('layouts.app');
         <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden mt-2">
             <thead class="bg-gray-100 text-gray-700">
                 <tr>
+                    <th class="py-2 px-4 border-b">Nome</th>
                     <th class="py-2 px-4 border-b">Usuário</th>
                     <th class="py-2 px-4 border-b">Perfil</th>
                     <th class="py-2 px-4 border-b">Status</th>
@@ -82,6 +83,7 @@ layout('layouts.app');
             <tbody class="text-gray-800">
                 @forelse ($users as $user)
                     <tr class="hover:bg-slate-50">
+                        <td class="py-2 px-4 border-b text-center">{{ $user->nome_completo }}</td>
                         <td class="py-2 px-4 border-b text-center">{{ $user->name }}</td>
                         <td class="py-2 px-4 border-b text-center">{{ $user->profile->name }}</td>
                         <td class="py-2 px-4 border-b text-center">{{ !$user->deleted_at ? 'Ativo' : 'Inativo' }}</td>

@@ -263,6 +263,7 @@ class DatabaseSeeder extends Seeder
         DB::table('users')->insert([
             [
                 'name' => 'pedro.techuk',
+                'nome_completo' => 'Pedro Techuk',
                 'profile_id' => 1,
                 'created_by' => 'importacao',
                 'updated_by' => 'importacao',
@@ -271,6 +272,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'name' => 'ph',
+                'nome_completo' => 'Pedro Pazini',
                 'profile_id' => 1,
                 'created_by' => 'importacao',
                 'updated_by' => 'importacao',
@@ -496,7 +498,91 @@ class DatabaseSeeder extends Seeder
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
+            [
+                'local' => 'Stellantis-GPVA',
+                'created_by' => 'importacao',
+                'updated_by' => 'importacao',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'local' => 'Stellantis-MGA',
+                'created_by' => 'importacao',
+                'updated_by' => 'importacao',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'local' => 'Stellantis-NP',
+                'created_by' => 'importacao',
+                'updated_by' => 'importacao',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'local' => 'Stellantis-PG',
+                'created_by' => 'importacao',
+                'updated_by' => 'importacao',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+        ]);
 
+        DB::table('nao_identificados')->insert([
+
+            [
+                'justificativa' => 'Perda de prazo',
+                'created_by' => 'importacao',
+                'updated_by' => 'importacao',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'justificativa' => 'Desligado',
+                'created_by' => 'importacao',
+                'updated_by' => 'importacao',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'justificativa' => 'Autorização Superior',
+                'created_by' => 'importacao',
+                'updated_by' => 'importacao',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'justificativa' => 'Multa não recebida a tempo',
+                'created_by' => 'importacao',
+                'updated_by' => 'importacao',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+        ]);
+
+        DB::table('nao_descontados')->insert([
+
+            [
+                'justificativa' => 'Desligado',
+                'created_by' => 'importacao',
+                'updated_by' => 'importacao',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'justificativa' => 'Responsábilidade da empresa',
+                'created_by' => 'importacao',
+                'updated_by' => 'importacao',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'justificativa' => 'Autorização Superior',
+                'created_by' => 'importacao',
+                'updated_by' => 'importacao',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
         ]);
 
     }

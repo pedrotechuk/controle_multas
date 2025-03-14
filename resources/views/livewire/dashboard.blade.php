@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\User;
 use Carbon\Carbon;
 use App\Classes\Ad;
 use Illuminate\Support\Facades\Session;
@@ -21,17 +22,19 @@ state(['all_data' => []]);
 state(['modal_multa' => false]);
 state(['modal_ident_interna' => false]);
 state(['modal_ident_detran' => false]);
+state(['modal_corresponsavel' => false]);
 
-
-state(['unidades' => [], 'propriedades' => [], 'statuses' => [], 'status_finals' => []]);
-state(['filters', 'unidade', 'multa', 'data_ciencia', 'data_multa', 'data_limite', 'responsavel', 'propriedade', 'auto_infracao', 'condutor', 'condutor_modal', 'data_identificacao', 'identificador_interno', 'data_identificacao_detran', 'identificador_detran', 'status', 'status_final']);
+state(['unidades' => [], 'propriedades' => [], 'statuses' => [], 'status_finals' => [], 'usuarios' => []]);
+state(['filters', 'unidade', 'multa', 'data_ciencia', 'data_multa', 'data_limite', 'responsavel', 'propriedade', 'auto_infracao', 'condutor', 'condutor_modal', 'data_identificacao', 'identificador_interno', 'data_identificacao_detran', 'identificador_detran', 'status', 'status_final', 'corresponsavel']);
 
 
 mount(function () {
     if (!Gate::forUser(Auth::user())->allows('apps.view-any')) {
         return redirect()->route('errors.403');
     }
-    $this->multa = Multa::with('infracao')->find($this->id);
+    $this->multa = Multa::with(['infracao', 'responsavel_model'])->find($this->id);
+
+    $this->usuarios = User::whereNull('deleted_at')->orderBy('nome_completo', 'asc')->get()->map(fn($usuario) => ['id' => $usuario->name, 'name' => $usuario->nome_completo]);
 
     $this->unidades = [['id' => 1, 'name' => 'Virginia Maringá'], ['id' => 3, 'name' => 'Virgini Guarapuava'], ['id' => 7, 'name' => 'Virginia Ponta Grossa'], ['id' => 10, 'name' => 'Virginia Norte Pioneiro']];
 
@@ -55,7 +58,7 @@ mount(function () {
 });
 
 with(function () {
-    $multas = Multa::query()->orderBy('data_limite', 'asc')
+    $multas = Multa::query()->orderBy('created_at', 'asc')
         ->when($this->unidade, fn($query) => $query->where('unidade', $this->unidade))
         ->when($this->data_ciencia, fn($query) => $query->whereDate('data_ciencia', $this->data_ciencia))
         ->when($this->data_multa, fn($query) => $query->whereDate('data_multa', $this->data_multa))
@@ -71,7 +74,7 @@ with(function () {
         ->whereNot('status', 4);
 
     return [
-        'multas' => $multas->paginate(15),
+        'multas' => $multas->paginate(10),
     ];
 });
 
@@ -89,7 +92,7 @@ $filtrar = function () {
     ]);
 };
 
-$resetarFiltros = function() {
+$resetarFiltros = function () {
     Session::forget('filters');
 
     return $this->reset(['unidade', 'data_multa', 'data_limite', 'status', 'responsavel', 'propriedade', 'auto_infracao', 'condutor']);
@@ -176,6 +179,31 @@ $ident_Detran = function () {
     }
 };
 
+$saveCorresponsavel = function () {
+    $data = $this->validate(
+        [
+            'corresponsavel' => ['required'],
+        ]
+    );
+
+    $this->all_data = array_merge($this->all_data, $data);
+
+    try {
+        $this->multa->update([
+            'corresponsavel' => $this->all_data['corresponsavel'],
+        ]);
+
+        $this->success('Corresponsável indicado com sucesso!');
+
+        $this->reset([
+            'corresponsavel'
+        ]);
+        return redirect(route('dashboard'));
+    } catch (Exception $e) {
+        return $this->error('Não foi possível indicar o responsável.');
+    }
+};
+
 $getButtonClass = function ($dateStart, $daysThreshold, $warningDays, $errorDays) {
     if (!$dateStart) return 'btn-sm btn-outline';
 
@@ -211,6 +239,11 @@ $openModalIdentDetran = function ($id) {
     $this->modal_ident_detran = true;
 };
 
+$openModalCorresponsavel = function ($id) {
+    $this->multa = Multa::find($id);
+    $this->modal_corresponsavel = true;
+};
+
 layout('layouts.app');
 
 ?>
@@ -225,25 +258,28 @@ layout('layouts.app');
 
         <div class="grid grid-cols-5 gap-4 bg-gray-100 p-4 shadow rounded mt-2">
             <x-select label="Filtrar por unidade:" :options="$this->unidades" wire:model="unidade"
-                      placeholder="Selecione uma unidade..." placeholder-value="0" />
-            <x-datetime label="Filtrar por Data da Multa:" wire:model="data_multa" placeholder="Data Multa" />
-            <x-datetime label="Filtrar por Data Limite:" wire:model="data_limite" placeholder="Data Limite" />
-            <x-select label="Filtrar por status:" :options="$this->statuses->filter(fn($status) => !in_array($status['id'], [4, 5]))"
-                      wire:model="status" placeholder="Selecione um status..." placeholder-value="0" option-label="name" option-value="id"/>
+                      placeholder="Selecione uma unidade..." placeholder-value="0"/>
+            <x-datetime label="Filtrar por Data da Multa:" wire:model="data_multa" placeholder="Data Multa"/>
+            <x-datetime label="Filtrar por Data Limite:" wire:model="data_limite" placeholder="Data Limite"/>
+            <x-select label="Filtrar por status:"
+                      :options="$this->statuses->filter(fn($status) => !in_array($status['id'], [4, 5]))"
+                      wire:model="status" placeholder="Selecione um status..." placeholder-value="0" option-label="name"
+                      option-value="id"/>
             <x-input label="Filtrar por responsável:" placeholder="Nome do responsável..." wire:model="responsavel"/>
             <x-select label="Filtrar por Propriedade/ Local:" :options="$this->propriedades" wire:model="propriedade"
-                      placeholder="Selecione a propriedade/local" placeholder-value="0" />
+                      placeholder="Selecione a propriedade/local" placeholder-value="0"/>
             <x-input label="Filtrar por N° Auto Infração:" placeholder="N° Auto Infração" wire:model="auto_infracao"/>
-            <x-input label="Filtrar por condutor:" placeholder="Nome do condutor..." wire:model.lazy="condutor" />
-            <x-button class="btn-outline mt-7" icon="o-x-circle" label="LIMPAR FILTROS" wire:click="resetarFiltros" />
+            <x-input label="Filtrar por condutor:" placeholder="Nome do condutor..." wire:model.lazy="condutor"/>
+            <x-button class="btn-outline mt-7" icon="o-x-circle" label="LIMPAR FILTROS" wire:click="resetarFiltros"/>
             <x-button class="btn-outline mt-7" icon="o-adjustments-horizontal" label="FILTRAR"
-                      wire:click="filtrar" />
+                      wire:click="filtrar"/>
         </div>
 
         <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden mt-2">
             <thead class="bg-gray-100 text-gray-700">
             <tr>
                 <th class="py-2 px-4 border-b">Unidade</th>
+                <th class="py-2 px-4 border-b">Data Ciência</th>
                 <th class="py-2 px-4 border-b">Data Multa</th>
                 <th class="py-2 px-4 border-b">Data Limite</th>
                 <th class="py-2 px-4 border-b">Dias Restantes</th>
@@ -279,6 +315,7 @@ layout('layouts.app');
                                 @break
                         @endswitch
                     </td>
+                    <td class="py-2 px-4 border-b text-center">{{ Carbon::parse($multa->data_ciencia)->format('d/m/Y') }}</td>
                     <td class="py-2 px-4 border-b text-center">{{ Carbon::parse($multa->data_multa)->format('d/m/Y') }}</td>
                     <td class="py-2 px-4 border-b text-center
                         @if ($multa->status_model->status_id != 4 && now()->greaterThan(Carbon::parse($multa->data_limite)))
@@ -295,7 +332,8 @@ layout('layouts.app');
                         @endphp
 
                         @if ($diasRestantes < 0)
-                            <x-button icon="o-exclamation-triangle" class="btn-ghost text-error rounded-full " tooltip="Multa em atraso!"/>
+                            <x-button icon="o-exclamation-triangle" class="btn-ghost text-error rounded-full "
+                                      tooltip="Multa em atraso!"/>
                         @elseif ($diasRestantes < 5)
                             <span class="text-red-600 font-semibold">{{ $diasRestantes }}</span>
                         @elseif ($diasRestantes < 10)
@@ -306,17 +344,18 @@ layout('layouts.app');
                     </td>
 
                     <td class="py-2 px-4 border-b text-center">{{ $multa->status_model->status_name ?? 'N/A' }}</td>
-                    <td class="py-2 px-4 border-b text-center">{{ $multa->responsavel }}</td>
+                    <td class="py-2 px-4 border-b text-center">{{ $multa->responsavel_model->nome_completo }}</td>
                     <td class="py-2 px-4 border-b text-center">{{$multa->propriedade_model->local}}</td>
                     <td class="py-2 px-4 border-b text-center relative group cursor-pointer">
                         <a href="{{ route('multas.info', ['id' => $multa->id]) }}">{{ $multa->auto_infracao }}</a>
-                        <x-button tooltip="Info. Multa" icon="o-information-circle" class="btn-ghost btn-sm rounded-full -ms-1"
+                        <x-button icon="o-information-circle"
+                                  class="btn-ghost btn-sm rounded-full -ms-1"
                                   link="{{route('multas.info', ['id' => $multa->id])}}"/>
-{{--                        <div class="absolute left-1/2 transform -translate-x-1/2  translate-y-2  bottom-full--}}
-{{--                            hidden group-hover:block bg-gray-100 text-gray-800 font-semibold text-sm--}}
-{{--                            px-2 py-1 rounded shadow-lg">--}}
-{{--                            <a href="{{ route('multas.info', ['id' => $multa->id]) }}">Ver detalhes</a>--}}
-{{--                        </div>--}}
+                        {{--                        <div class="absolute left-1/2 transform -translate-x-1/2  translate-y-2  bottom-full--}}
+                        {{--                            hidden group-hover:block bg-gray-100 text-gray-800 font-semibold text-sm--}}
+                        {{--                            px-2 py-1 rounded shadow-lg">--}}
+                        {{--                            <a href="{{ route('multas.info', ['id' => $multa->id]) }}">Ver detalhes</a>--}}
+                        {{--                        </div>--}}
                     </td>
                     <td class="py-2 px-4 border-b text-center">
                         @if ($multa->condutor)
@@ -356,6 +395,13 @@ layout('layouts.app');
                     </td>
 
                     <td class="py-2 px-4 border-b text-center">
+
+                        <x-button class="btn-sm" tooltip="Anexar." icon="o-paper-clip"
+                                  link="{{route('multas.update', ['id' => $multa->id])}}"/>
+
+                        <x-button class="btn-sm" tooltip="Corresponsável." icon="o-user"
+                                  wire:click="openModalCorresponsavel({{ $multa->id }})"/>
+
                         <x-button class="btn-sm" tooltip="Editar multa." icon="o-pencil"
                                   link="{{route('multas.update', ['id' => $multa->id])}}"/>
 
@@ -387,7 +433,8 @@ layout('layouts.app');
             <form wire:submit.prevent="ident_Interna">
                 <div class="flex flex-col gap-2">
                     <x-input label="Condutor: (Caso não identificado deixe em branco)"
-                             placeholder="Informe o condutor..." wire:model="condutor_modal" icon="o-building-office-2"/>
+                             placeholder="Informe o condutor..." wire:model="condutor_modal"
+                             icon="o-building-office-2"/>
                     <x-datetime label="Data da identificação:" wire:model="data_identificacao" icon="o-calendar"
                                 type="datetime-local"/>
                     <div class="flex flex-row justify-evenly items-center mt-2">
@@ -413,6 +460,23 @@ layout('layouts.app');
                         <x-button class="btn-sm " label="FECHAR" wire:click="$set('modal_ident_detran', false)"/>
                         <x-button class="btn-sm btn-success text-white" label="SALVAR" icon="o-check"
                                   wire:click="ident_Detran"/>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </x-modal>
+
+    <x-modal wire:model.live="modal_corresponsavel" class="backdrop-blur">
+        <div>
+            <h1 class=" mb-4 font-bold uppercase text-center text-gray-900 underline">INDICAR CORRESPONSÁVEL</h1>
+            <form wire:submit.prevent="saveCorresponsavel">
+                <div class="flex flex-col gap-2">
+                    <x-select placeholder="Selecione o corresponsável..." wire:model.live="corresponsavel"
+                              :options="$this->usuarios"  icon="o-user"/>
+                    <div class="flex flex-row justify-evenly items-center mt-2">
+                        <x-button class="btn-sm " label="FECHAR" wire:click="$set('modal_corresponsavel', false)"/>
+                        <x-button class="btn-sm btn-success text-white" label="SALVAR" icon="o-check"
+                                  wire:click="saveCorresponsavel"/>
                     </div>
                 </div>
             </form>

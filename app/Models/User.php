@@ -11,7 +11,7 @@ class User extends Authenticatable
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['name', 'profile_id', 'created_by', 'updated_by', 'deleted_by', 'deleted_at'];
+    protected $fillable = ['name', 'nome_completo', 'profile_id', 'created_by', 'updated_by', 'deleted_by', 'deleted_at'];
 
     public function profile(): HasOne
     {

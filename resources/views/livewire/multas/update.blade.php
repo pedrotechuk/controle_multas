@@ -16,11 +16,6 @@ uses([Toast::class]);
 state(['id'])->url();
 state(['all_data' => []]);
 
-state(['modal_multa' => false]);
-state(['modal_ident_interna' => false]);
-state(['modal_ident_detran' => false]);
-
-
 state(['unidades' => [], 'propriedades' => [], 'statuses' => [], 'status_finals' => []]);
 state(['filters', 'unidade', 'multa', 'data_ciencia', 'data_multa', 'data_limite', 'responsavel', 'propriedade', 'auto_infracao', 'condutor', 'condutor_modal', 'data_identificacao', 'identificador_interno', 'data_identificacao_detran', 'identificador_detran', 'status', 'status_final']);
 
@@ -73,6 +68,8 @@ $update = function () {
         $this->success('Informações salvas com sucesso!');
         return redirect(route('dashboard'));
     } catch (Exception $e) {
+
+        dd($e->getMessage());
         return $this->error('Não foi possível atualizar dados, verifique os campos e tente novamente!');
 
     }

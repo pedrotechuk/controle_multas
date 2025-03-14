@@ -18,6 +18,8 @@ return new class extends Migration
             $table->timestamp('data_multa');
             $table->timestamp('data_limite');
             $table->string('responsavel');
+            $table->foreign('responsavel')->references('name')->on('users')->onDelete('cascade');
+            $table->string('corresponsavel')->nullable();
             $table->foreignId('propriedade')->constrained('propriedades')->onDelete('cascade');
             $table->string('placa')->nullable();
             $table->string('auto_infracao');
@@ -30,7 +32,9 @@ return new class extends Migration
             $table->string('identificador_detran')->nullable();
             $table->foreignId('status')->nullable()->constrained('statuses')->onDelete('cascade');
             $table->foreignId('status_final')->nullable()->constrained('status_finals')->onDelete('cascade');
-            $table->string('justificativa')->nullable();
+            $table->foreignId('nao_identificacao')->nullable()->constrained('nao_identificados')->onDelete('cascade');
+            $table->foreignId('nao_desconto')->nullable()->constrained('nao_descontados')->onDelete('cascade');
+            $table->integer('cod_triare')->nullable();
             $table->timestamp('data_finalizada')->nullable();
             $table->string('finalizado_por')->nullable();
 

@@ -19,6 +19,7 @@ class Multa extends Model
         'data_multa',
         'data_limite',
         'responsavel',
+        'corresponsavel',
         'propriedade',
         'placa',
         'auto_infracao',
@@ -31,6 +32,9 @@ class Multa extends Model
         'status',
         'status_final',
         'justificativa',
+        'nao_identificacao',
+        'nao_desconto',
+        'cod_triare',
         'data_finalizada',
         'finalizado_por',
         'created_by',
@@ -46,6 +50,22 @@ class Multa extends Model
         'data_identificacao' => 'datetime',
         'data_identificacao_detran' => 'datetime',
     ];
+
+    public function nao_identificado_model()
+    {
+        return $this->belongsTo(NaoIdentificado::class, 'justificativa', 'id');
+    }
+
+
+    public function nao_descontado_model()
+    {
+        return $this->belongsTo(NaoDescontado::class, 'id', 'justificativa');
+    }
+
+    public function responsavel_model()
+    {
+        return $this->belongsTo(User::class, 'responsavel', 'name');
+    }
 
     public function infracao()
     {
