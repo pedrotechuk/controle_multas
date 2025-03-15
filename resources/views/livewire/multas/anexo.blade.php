@@ -113,9 +113,7 @@ layout('layouts.app');
                     </div>
                 @endif
 
-                <button type="submit" class="mt-3 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">
-                    Enviar
-                </button>
+                <x-button class="btn-sm btn-success text-white" label="SALVAR" icon="o-check" wire:click="salvarAnexo"/>
             </form>
         </div>
     </x-card>
