@@ -53,8 +53,6 @@ $salvarAnexo = function () {
         'arquivo' => ['required', 'file', 'max:10048'],
     ]);
 
-    dd($data);
-
     try {
         $path = $this->arquivo->store('anexos', 'public');
 
@@ -111,7 +109,7 @@ layout('layouts.app');
                 @if ($arquivo)
                     <div class="mt-2">
                         <p class="text-gray-600 text-sm mb-1">Pré-visualização:</p>
-                        <img src="{{ $arquivo->temporaryUrl() }}" alt="Pré-visualização" class="w-32 h-32 object-cover rounded-md shadow">
+                        <img src="{{ asset('storage/'.$arquivo) }}" alt="Pré-visualização" class="w-32 h-32 object-cover rounded-md shadow">
                     </div>
                 @endif
 
