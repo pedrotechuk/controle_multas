@@ -5,6 +5,7 @@ use App\Models\NaoDescontado;
 use App\Models\NaoIdentificado;
 use Carbon\Carbon;
 use App\Classes\Ad;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Livewire\WithFileUploads;
 use Mary\Traits\Toast;
@@ -46,9 +47,10 @@ mount(function () {
     $this->status_finals = StatusFinal::whereNull('deleted_at')->orderBy('status_final_name', 'asc')->get()->map(fn($status_final) => ['id' => $status_final->id, 'name' => $status_final->status_final_name]);
 });
 
+
 $salvarAnexo = function () {
     $data = $this->validate([
-        'arquivo' => ['required', 'file', 'max:10048'], // Limite de 2MB
+        'arquivo' => ['required', 'file', 'max:10048'],
     ]);
 
     try {
@@ -66,7 +68,7 @@ $salvarAnexo = function () {
         $this->arquivo = null;
         return $this->success('Anexo enviado com sucesso!');
     } catch (Exception $e) {
-        dd(Ad::username());
+        dd($e->getMessage());
         return $this->error('Erro ao enviar o anexo.');
     }
 };
@@ -85,29 +87,69 @@ $removerAnexo = function ($anexoId) {
 };
 layout('layouts.app');
 ?>
-
 <div>
+    <x-card class="bg-white p-4 rounded-lg shadow-md">
+        <div class="flex justify-between items-center">
+            <div>
+                <h2 class="text-xl font-bold">Anexos Multa N°{{ $this->id }}</h2>
+                <p class="text-gray-600">Criada em: {{ Carbon::parse($this->multa->created_at)->format('d/m/Y') }}
+                    por {{ $this->multa->created_by }}</p>
+            </div>
+            <x-button class="btn-sm btn-outline" label="VOLTAR" icon="o-arrow-uturn-left"
+                      @click="window.history.back()"/>
+        </div>
+
+        <!-- Formulário de Upload -->
+        <div class="mt-6 mb-6 border border-gray-300 rounded-md p-4 ">
+            <form wire:submit.prevent="salvarAnexo" enctype="multipart/form-data" class="mb-4">
+                <label class="block mb-2 font-semibold">Enviar Arquivo:</label>
+                <input type="file" wire:model="arquivo" class="block w-full border rounded-md p-2 mt-2 mb-2">
+
+                <!-- Exibe a pré-visualização da imagem -->
+                @if ($arquivo)
+                    <div class="mt-2">
+                        <p class="text-gray-600 text-sm mb-1">Pré-visualização:</p>
+                        <img src="{{ $arquivo->temporaryUrl() }}" alt="Pré-visualização" class="w-32 h-32 object-cover rounded-md shadow">
+                    </div>
+                @endif
+
+                <button type="submit" class="mt-3 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">
+                    Enviar
+                </button>
+            </form>
+        </div>
+    </x-card>
+        <!-- Lista de Anexos -->
     <div>
-        <h3 class="font-bold mb-2">Anexos</h3>
+        <h4 class="text-md font-semibold mt-4 mb-2">Lista de Anexos:</h4>
 
-        @if (session()->has('message'))
-            <div class="text-green-600">{{ session('message') }}</div>
-        @endif
+        @if ($this->multa && $this->multa->anexos->isNotEmpty())
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                @foreach ($this->multa->anexos as $anexo)
+                    <div class="bg-gray-100 p-3 rounded-lg shadow-md relative">
+                        <!-- Exibir a imagem com opção de visualização -->
+                        @if (Str::endsWith($anexo->arquivo, ['.jpg', '.jpeg', '.png', '.gif', '.webp']))
+                            <a href="{{ asset('storage/' . $anexo->arquivo) }}" target="_blank">
+                                <img src="{{ asset('storage/' . $anexo->arquivo) }}"
+                                     alt="Anexo"
+                                     class="w-full h-32 object-cover rounded-md mb-2 cursor-pointer">
+                            </a>
+                        @else
+                            <div class="text-gray-700 text-sm italic">Arquivo não é uma imagem</div>
+                        @endif
 
-        <form wire:submit.prevent="salvarAnexo" enctype="multipart/form-data" class="mb-4">
-            <input type="file" wire:model="arquivo">
-            @error('arquivo') <span class="text-red-600">{{ $message }}</span> @enderror
-            <button type="submit" class="bg-blue-500 text-white px-4 py-2 mt-2">Enviar</button>
-        </form>
+                        <p class="text-sm text-gray-700 truncate">{{ $anexo->nome_original }}</p>
 
-        <ul>
-            @if($this->multa && $this->multa->anexos)
-                @foreach($this->multa->anexos as $anexo)
-                    <p>{{ $anexo->arquivo }}</p>
+                        <!-- Botão de Excluir -->
+                        <x-button tooltip="Excluir anexo" icon="o-trash" class="btn-error btn-xs rounded-full text-white "
+                                  wire:confirm="Deseja realmente remover este anexo?"
+                                  wire:click="removerAnexo({{ $anexo->id }})"/>
+                    </div>
                 @endforeach
-            @else
-                <p>Nenhum anexo encontrado.</p>
-            @endif
-        </ul>
+            </div>
+        @else
+            <p class="text-gray-500 italic">Nenhum anexo encontrado.</p>
+        @endif
     </div>
+
 </div>

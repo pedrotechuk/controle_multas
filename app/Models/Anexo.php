@@ -9,7 +9,7 @@ class Anexo extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['multa_id', 'arquivo', 'nome_original'];
+    protected $fillable = ['multa_id', 'arquivo', 'nome_original',  'created_by', 'updated_by', 'deleted_by', 'deleted_at'];
 
     public function multa()
     {
