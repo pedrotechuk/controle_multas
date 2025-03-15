@@ -397,7 +397,7 @@ layout('layouts.app');
                     <td class="py-2 px-4 border-b text-center">
 
                         <x-button class="btn-sm" tooltip="Anexar." icon="o-paper-clip"
-                                  link="{{route('multas.update', ['id' => $multa->id])}}"/>
+                                  link="{{route('multas.anexo', ['id' => $multa->id])}}"/>
 
                         <x-button class="btn-sm" tooltip="Corresponsável." icon="o-user"
                                   wire:click="openModalCorresponsavel({{ $multa->id }})"/>

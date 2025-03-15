@@ -51,6 +51,11 @@ class Multa extends Model
         'data_identificacao_detran' => 'datetime',
     ];
 
+    public function anexos()
+    {
+        return $this->hasMany(Anexo::class);
+    }
+
     public function nao_identificado_model()
     {
         return $this->belongsTo(NaoIdentificado::class, 'justificativa', 'id');

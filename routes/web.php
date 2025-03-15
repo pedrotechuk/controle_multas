@@ -17,11 +17,11 @@ use Illuminate\Support\Facades\Route;
 
 if (env('APP_ENV') === 'production') {
     Livewire::setScriptRoute(function ($handle) {
-        return Route::get('gerenciamento_powerapps/livewire/livewire.js', $handle);
+        return Route::get('controle_multas/livewire/livewire.js', $handle);
     });
 
     Livewire::setUpdateRoute(function ($handle) {
-        return Route::post('gerenciamento_powerapps/livewire/update', $handle);
+        return Route::post('controle_multas/livewire/update', $handle);
     });
 }
 
@@ -54,6 +54,7 @@ Route::prefix('/multas')->group(function (){
     Volt::route('/finalizar/{id}', 'multas.finalize')->middleware(['auth', 'verified'])->name('multas.finalize');
     Volt::route('/editar/{id}', 'multas.update')->middleware(['auth', 'verified'])->name('multas.update');
     Volt::route('/info/{id}', 'multas.info')->middleware(['auth', 'verified'])->name('multas.info');
+    Volt::route('/anexos/{id}', 'multas.anexo')->middleware(['auth', 'verified'])->name('multas.anexo');
 });
 
 Route::prefix('/consultas')->group(function (){
