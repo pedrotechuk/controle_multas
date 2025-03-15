@@ -53,6 +53,8 @@ $salvarAnexo = function () {
         'arquivo' => ['required', 'file', 'max:10048'],
     ]);
 
+    dd($data);
+
     try {
         $path = $this->arquivo->store('anexos', 'public');
 
