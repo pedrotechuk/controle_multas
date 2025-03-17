@@ -100,24 +100,60 @@ layout('layouts.app');
         </div>
 
         <!-- Formulário de Upload -->
-        <div class="mt-6 mb-6 border border-gray-300 rounded-md p-4 ">
-            <form wire:submit.prevent="salvarAnexo" enctype="multipart/form-data" class="mb-4">
+        <div class="mt-6 mb-6 border border-gray-300 rounded-md p-4">
+            <form id="upload-form" enctype="multipart/form-data">
                 <label class="block mb-2 font-semibold">Enviar Arquivo:</label>
-                <input type="file" wire:model="arquivo" class="block w-full border rounded-md p-2 mt-2 mb-2">
+                <input type="file" id="arquivo" class="block w-full border rounded-md p-2 mt-2 mb-2">
+                <img id="preview" class="w-32 h-32 object-cover rounded-md shadow hidden" />
 
-                <!-- Exibe a pré-visualização da imagem -->
-                @if ($arquivo)
-                    <div class="mt-2">
-                        <p class="text-gray-600 text-sm mb-1">Pré-visualização:</p>
-                        <img src="{{ asset('storage/'.$arquivo) }}" alt="Pré-visualização" class="w-32 h-32 object-cover rounded-md shadow">
-                    </div>
-                @endif
-
-                <x-button class="btn-sm btn-success text-white" label="SALVAR" icon="o-check" wire:click="salvarAnexo"/>
+                <button type="button" id="btnSalvar" class="px-4 py-2 bg-green-600 text-white rounded-md mt-2" onclick="uploadArquivo()">SALVAR</button>
             </form>
         </div>
     </x-card>
-        <!-- Lista de Anexos -->
+
+    <script>
+        document.getElementById('arquivo').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('preview').src = e.target.result;
+                    document.getElementById('preview').classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function uploadArquivo() {
+            let formData = new FormData();
+            let arquivo = document.getElementById('arquivo').files[0];
+
+            if (!arquivo) {
+                alert('Selecione um arquivo para enviar.');
+                return;
+            }
+
+            formData.append('arquivo', arquivo);
+            formData.append('multa_id', '{{ $this->id }}'); // Adicionando o ID
+
+            fetch("{{ route('upload.anexo') }}", {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    location.reload();
+                })
+                .catch(error => console.error('Erro ao enviar:', error));
+        }
+
+    </script>
+
+    <!-- Lista de Anexos -->
     <div>
         <h4 class="text-md font-semibold mt-4 mb-2">Lista de Anexos:</h4>
 

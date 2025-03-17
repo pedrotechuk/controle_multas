@@ -1,5 +1,9 @@
 <?php
 
+use App\Classes\Ad;
+use App\Models\Anexo;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Livewire\Livewire;
 use Livewire\Volt\Volt;
 use Illuminate\Support\Facades\Route;
@@ -49,6 +53,28 @@ Route::prefix('/admin')->group(function () {
         Volt::route('/editar-permissoes/{id}', 'admin.profile.update-permissions')->middleware(['auth', 'verified'])->name('admin.profile.update-permissions');
     });
 });
+
+Route::post('/upload-anexo', function (Request $request) {
+    $request->validate([
+        'arquivo' => 'required|file|max:10048',
+    ]);
+
+    try {
+        $path = $request->file('arquivo')->store('anexos', 'public');
+
+        Anexo::create([
+            'multa_id' => $request->multa_id, // Certifique-se de passar esse ID no front
+            'arquivo' => $path,
+            'nome_original' => $request->file('arquivo')->getClientOriginalName(),
+            'created_at' => Carbon::now(),
+            'created_by' => Ad::username(),
+        ]);
+
+        return response()->json(['message' => 'Anexo enviado com sucesso!']);
+    } catch (\Exception $e) {
+        return response()->json(['message' => 'Erro ao enviar o anexo.'], 500);
+    }
+})->name('upload.anexo');
 
 Route::prefix('/multas')->group(function (){
     Volt::route('/finalizar/{id}', 'multas.finalize')->middleware(['auth', 'verified'])->name('multas.finalize');
