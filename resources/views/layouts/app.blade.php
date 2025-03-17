@@ -111,6 +111,22 @@
             }
         }
 
+        #btnSalvar {
+            padding: 8px 16px;
+            background-color: #28a745; /* Cor de sucesso (verde) */
+            color: white;
+            border: none;
+            border-radius: 6px;
+            margin-top: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        #btnSalvar:hover {
+            background-color: #218838;
+
+
     </style>
 
     @livewireStyles

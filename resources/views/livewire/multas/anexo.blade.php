@@ -106,7 +106,7 @@ layout('layouts.app');
                 <input type="file" id="arquivo" class="block w-full border rounded-md p-2 mt-2 mb-2">
                 <img id="preview" class="w-32 h-32 object-cover rounded-md shadow hidden" />
 
-                <button type="button" id="btnSalvar" class="px-4 py-2 btn-success text-white rounded-md mt-2" onclick="uploadArquivo()">SALVAR</button>
+                <button type="button" id="btnSalvar" onclick="uploadArquivo()">SALVAR</button>
             </form>
         </div>
     </x-card>
