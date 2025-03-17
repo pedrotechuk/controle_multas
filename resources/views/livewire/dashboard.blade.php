@@ -402,7 +402,7 @@ layout('layouts.app');
                                   link="{{route('multas.anexo', ['id' => $multa->id])}}"/>
 
                         <x-button class="btn-sm" tooltip="Corresponsável." icon="o-user"
-                                  :class="$multa->corresponsavel ? 'btn-sm bg-blue-600 text-white' : 'btn-sm'"
+                                  :class="$multa->corresponsavel ? 'btn-sm btn-success text-white' : 'btn-sm'"
                                   wire:click="openModalCorresponsavel({{ $multa->id }})"/>
 
                         <x-button class="btn-sm" tooltip="Editar multa." icon="o-pencil"
