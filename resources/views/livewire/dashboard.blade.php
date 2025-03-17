@@ -474,7 +474,7 @@ layout('layouts.app');
             <h1 class=" mb-4 font-bold uppercase text-center text-gray-900 underline">INDICAR CORRESPONSÁVEL</h1>
             <form wire:submit.prevent="saveCorresponsavel">
                 <div class="flex flex-col gap-2">
-                    <x-input placeholder="Informe o corresponsável..." wire:model.live="corresponsavel" icon="o-user"/>
+                    <x-input placeholder="Informe o corresponsável..." wire:model.lazy="corresponsavel" icon="o-user"/>
                     <div class="flex flex-row justify-evenly items-center mt-2">
                         <x-button class="btn-sm " label="FECHAR" wire:click="$set('modal_corresponsavel', false)"/>
                         <x-button class="btn-sm btn-success text-white" label="SALVAR" icon="o-check"
