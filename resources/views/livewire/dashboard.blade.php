@@ -74,7 +74,7 @@ with(function () {
         ->whereNot('status', 4);
 
     return [
-        'multas' => $multas->paginate(10),
+        'multas' => $multas->paginate(7),
     ];
 });
 

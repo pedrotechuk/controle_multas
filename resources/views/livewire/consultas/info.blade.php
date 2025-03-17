@@ -58,7 +58,6 @@ layout('layouts.app');
         <div class="grid grid-cols-3 gap-2 mt-4">
             <x-input readonly label="Unidade:"
                      value="{{ $this->multa->unidade == 1 ? 'Maringá' : ($this->multa->unidade == 3 ? 'Guarapuava' : ($this->multa->unidade == 7 ? 'Ponta Grossa' : ($this->multa->unidade == 10 ? 'Norte Pioneiro' : ''))) }}"/>
-            <x-input readonly label="Criado por:" value="{{ $this->multa->created_by}}"/>
             <x-input readonly label="Auto Infração:" value="{{ $this->multa->auto_infracao }}"/>
             <x-input readonly label="Responsável:" value="{{ $this->multa->responsavel }}"/>
             <x-input readonly label="Corresponsável:" value="{{ $this->multa->responsavel_model->nome_completo ?? 'Não definido'}}"/>
@@ -89,6 +88,7 @@ layout('layouts.app');
                      value="{{ $this->multa->nao_desconto == 1 ? 'Desligado' :
                              ( $this->multa->nao_desconto == 2 ? 'Responsábilidade da empresa':
                              ( $this->multa->nao_desconto == 3 ? 'Autorização Superior' : ''))}}"/>
+            <x-input readonly label="Descontado de:" value="{{ $this->multa->descontado}}"/>
 
             <x-button class="btn-outline mt-7" tooltip="Detalhes da infração." icon="o-information-circle"
                       label="DETALHES DA INFRAÇÃO"

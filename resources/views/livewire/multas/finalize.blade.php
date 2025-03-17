@@ -21,7 +21,7 @@ state(['id'])->url();
 state(['all_data' => []]);
 
 state(['unidades' => [], 'propriedades' => [], 'locais' => [], 'status_finals' => [], 'nao_identificados' => [], 'nao_descontos' => [], 'verifyStatusFinal' => []]);
-state(['multa', 'status_final', 'unidade', 'data_ciencia', 'nao_identificacao', 'nao_desconto', 'cod_triare', 'data_multa', 'data_limite', 'responsavel', 'propriedade', 'auto_infracao', 'finalizado_por']);
+state(['multa', 'status_final', 'unidade', 'data_ciencia', 'descontado', 'nao_identificacao', 'nao_desconto', 'cod_triare', 'data_multa', 'data_limite', 'responsavel', 'propriedade', 'auto_infracao', 'finalizado_por']);
 
 mount(function () {
     if (!Gate::forUser(Auth::user())->allows('apps.view-any')) {
@@ -46,8 +46,9 @@ $finalize = function () {
     $data = $this->validate(
         [
             'status_final' => ['required'],
+            'descontado' => ['nullable'],
             'nao_identificacao' => ['nullable', 'required_unless:status_final,1,2'],
-            'nao_desconto' => ['nullable', 'required_unless:status_final,1'],
+            'nao_desconto' => ['nullable', 'required_unless:status_final,1,3'],
             'cod_triare' => ['required'],
         ],
         [
@@ -57,13 +58,12 @@ $finalize = function () {
             'cod_triare.required' => 'Código triare é obrigatório.'
         ]
     );
-
     $this->all_data = array_merge($this->all_data, $data);
-
 
     try {
         $this->multa->update([
             'status_final' => $this->all_data['status_final'],
+            'descontado' =>  $this->all_data['descontado'] ?? null,
             'nao_identificacao' => $this->all_data['nao_identificacao'] ?? null,
             'nao_desconto' => $this->all_data['nao_desconto'] ?? null,
             'cod_triare' => $this->all_data['cod_triare'] ?? null,
@@ -123,9 +123,9 @@ layout('layouts.app');
             <x-select class="mt-1 mb-1" label="Qual o motivo do não desconto?" placeholder="Selecione o motivo..." placeholder-value="0"
                       :options="$this->nao_descontos" wire:model.live="nao_desconto" icon="o-document-text"/>
         @elseif($this->status_final == 3)
-            <x-input class="mt-1 mb-1" label="Qual o motivo da não identificação?" wire:model="justificativa"
-                     placeholder="Explique a situação..." icon="o-document-text"/>
-            <x-input class="mt-1 mb-1" label="Quem será responsabilizado pelo desconto?" wire:model="condutor"
+            <x-select class="mt-1 mb-1" label="Qual o motivo da não identificação?" placeholder="Selecione o motivo..." placeholder-value="0"
+                      :options="$this->nao_identificados" wire:model.live="nao_identificacao" icon="o-document-text"/>
+            <x-input class="mt-1 mb-1" label="Quem será responsabilizado pelo desconto?" wire:model="descontado"
                      placeholder="Ex: João da Silva" icon="o-user"/>
         @elseif($this->status_final == 4)
             <x-select class="mt-1 mb-1" label="Qual o motivo da não identificação?" placeholder="Selecione o motivo..." placeholder-value="0"

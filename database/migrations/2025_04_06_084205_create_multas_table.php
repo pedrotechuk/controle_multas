@@ -34,6 +34,8 @@ return new class extends Migration
             $table->foreignId('status_final')->nullable()->constrained('status_finals')->onDelete('cascade');
             $table->foreignId('nao_identificacao')->nullable()->constrained('nao_identificados')->onDelete('cascade');
             $table->foreignId('nao_desconto')->nullable()->constrained('nao_descontados')->onDelete('cascade');
+            $table->string('descontado')->nullable();
+
             $table->integer('cod_triare')->nullable();
             $table->timestamp('data_finalizada')->nullable();
             $table->string('finalizado_por')->nullable();

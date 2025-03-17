@@ -34,6 +34,7 @@ class Multa extends Model
         'justificativa',
         'nao_identificacao',
         'nao_desconto',
+        'descontado',
         'cod_triare',
         'data_finalizada',
         'finalizado_por',

@@ -283,9 +283,10 @@ layout('layouts.app');
                     {{--                    <td class="py-2 px-4 border-b text-center">{{ $multa->status_final_model->status_final_name }}</td>--}}
 
                     <td class="py-2 px-4 border-b text-center">
-
                         <x-button tooltip="Info. Multa" icon="o-information-circle" class="btn-outline btn-sm "
                                   link="{{route('consultas.info', ['id' => $multa->id])}}"/>
+                        <x-button class="btn-sm btn-outline" tooltip="Anexar." icon="o-paper-clip"
+                                  link="{{route('multas.anexo', ['id' => $multa->id])}}"/>
                     </td>
                 </tr>
             @empty
