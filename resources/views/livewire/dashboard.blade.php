@@ -58,7 +58,7 @@ mount(function () {
 });
 
 with(function () {
-    $multas = Multa::query()->orderBy('data_finalizada', 'desc')
+    $multas = Multa::query()->orderBy('data_finalizada', 'asc')
         ->when($this->unidade, fn($query) => $query->where('unidade', $this->unidade))
         ->when($this->data_ciencia, fn($query) => $query->whereDate('data_ciencia', $this->data_ciencia))
         ->when($this->data_multa, fn($query) => $query->whereDate('data_multa', $this->data_multa))
