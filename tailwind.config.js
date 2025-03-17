@@ -12,6 +12,11 @@ export default {
 
         "./vendor/robsontenorio/mary/src/View/Components/**/*.php",
     ],
+    safelist: [
+        'btn-success', // Garante que a classe não seja removida
+        'btn-sm',
+        'text-white',
+    ],
 
     theme: {
         extend: {
