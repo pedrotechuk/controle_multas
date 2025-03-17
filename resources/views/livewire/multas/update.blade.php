@@ -67,6 +67,10 @@ $update = function () {
     try {
         $data = $this->validate();
 
+        if (isset($data['data_multa'])) {
+            $data['data_limite'] = Carbon::parse($data['data_multa'])->addDays(40)->format('Y-m-d\TH:i');
+        }
+
         foreach ($data as $key => $value) {
             if ($value === '') {
                 $data[$key] = null;
@@ -77,10 +81,12 @@ $update = function () {
         $this->success('Informações salvas com sucesso!');
         return redirect(route('dashboard'));
     } catch (Exception $e) {
+
         return $this->error('Não foi possível atualizar dados, verifique os campos e tente novamente!');
 
     }
 };
+
 
 layout('layouts.app');
 ?>

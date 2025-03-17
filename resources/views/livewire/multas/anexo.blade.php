@@ -114,13 +114,23 @@ layout('layouts.app');
     <script>
         document.getElementById('arquivo').addEventListener('change', function(event) {
             const file = event.target.files[0];
+            const previewImg = document.getElementById('preview');
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('preview').src = e.target.result;
-                    document.getElementById('preview').classList.remove('hidden');
-                };
-                reader.readAsDataURL(file);
+                if (file.type === "application/pdf") {
+                    previewImg.classList.add('hidden');
+                    const pdfPreview = document.createElement('embed');
+                    pdfPreview.src = URL.createObjectURL(file);
+                    pdfPreview.type = "application/pdf";
+                    pdfPreview.className = "w-full h-48 rounded-md shadow";
+                    previewImg.parentNode.appendChild(pdfPreview);
+                } else if (file.type.startsWith("image/")) {
+                    reader.onload = function(e) {
+                        previewImg.src = e.target.result;
+                        previewImg.classList.remove('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                }
             }
         });
 
@@ -168,6 +178,12 @@ layout('layouts.app');
                                      alt="Anexo"
                                      class="w-full h-32 object-cover rounded-md mb-2 cursor-pointer">
                             </a>
+                        @elseif (Str::endsWith($anexo->arquivo, ['.pdf']))
+                            <a href="{{ asset('storage/' . $anexo->arquivo) }}" target="_blank"
+                               class="text-blue-500 hover:underline flex items-center">
+                                <x-icon name="o-document" class="w-5 h-5 mr-2"/> Abrir PDF
+                            </a>
+
                         @else
                             <div class="text-gray-700 text-sm italic">Arquivo não é uma imagem</div>
                         @endif

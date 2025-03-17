@@ -25,7 +25,7 @@ state(['modal_ident_detran' => false]);
 state(['modal_corresponsavel' => false]);
 
 state(['unidades' => [], 'propriedades' => [], 'statuses' => [], 'status_finals' => [], 'usuarios' => []]);
-state(['filters', 'unidade', 'multa', 'data_ciencia', 'data_multa', 'data_limite', 'responsavel', 'propriedade', 'auto_infracao', 'condutor', 'condutor_modal', 'data_identificacao', 'identificador_interno', 'data_identificacao_detran', 'identificador_detran', 'status', 'status_final', 'corresponsavel']);
+state(['filters', 'unidade', 'multa', 'data_ciencia', 'data_multa', 'data_limite', 'responsavel', 'corresponsavel', 'propriedade', 'auto_infracao', 'condutor', 'condutor_modal', 'data_identificacao', 'identificador_interno', 'data_identificacao_detran', 'identificador_detran', 'status', 'status_final', 'corresponsavel']);
 
 
 mount(function () {
@@ -64,6 +64,7 @@ with(function () {
         ->when($this->data_multa, fn($query) => $query->whereDate('data_multa', $this->data_multa))
         ->when($this->data_limite, fn($query) => $query->whereDate('data_limite', $this->data_limite))
         ->when($this->responsavel, fn($query) => $query->where('responsavel', 'LIKE', "%{$this->responsavel}%"))
+        ->when($this->corresponsavel, fn($query) => $query->where('corresponsavel', 'LIKE', "%{$this->corresponsavel}%"))
         ->when($this->propriedade, fn($query) => $query->where('propriedade', $this->propriedade))
         ->when($this->auto_infracao, fn($query) => $query->where('auto_infracao', 'LIKE', "%{$this->auto_infracao}%"))
         ->when($this->condutor, fn($query) => $query->where('condutor', 'LIKE', "%{$this->condutor}%"))
@@ -241,6 +242,7 @@ $openModalIdentDetran = function ($id) {
 
 $openModalCorresponsavel = function ($id) {
     $this->multa = Multa::find($id);
+    $this->corresponsavel = $this->multa->corresponsavel;
     $this->modal_corresponsavel = true;
 };
 
@@ -400,6 +402,7 @@ layout('layouts.app');
                                   link="{{route('multas.anexo', ['id' => $multa->id])}}"/>
 
                         <x-button class="btn-sm" tooltip="Corresponsável." icon="o-user"
+                                  :class="$multa->corresponsavel ? 'btn-sm bg-blue-600 text-white' : 'btn-sm'"
                                   wire:click="openModalCorresponsavel({{ $multa->id }})"/>
 
                         <x-button class="btn-sm" tooltip="Editar multa." icon="o-pencil"
