@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\User;
 use Carbon\Carbon;
 use App\Classes\Ad;
 use Illuminate\Validation\Rule;
@@ -14,26 +15,37 @@ use function Livewire\Volt\{rules, state, layout, mount, uses};
 uses([Toast::class]);
 
 state(['id'])->url();
+
+
 state(['all_data' => []]);
 
-state(['unidades' => [], 'propriedades' => [], 'statuses' => [], 'status_finals' => []]);
-state(['filters', 'unidade', 'multa', 'data_ciencia', 'data_multa', 'data_limite', 'responsavel', 'propriedade', 'auto_infracao', 'condutor', 'condutor_modal', 'data_identificacao', 'identificador_interno', 'data_identificacao_detran', 'identificador_detran', 'status', 'status_final']);
+state(['unidades' => [], 'propriedades' => [], 'usuarios' => []]);
+state(['id', 'unidade', 'multa', 'data_ciencia', 'data_multa', 'data_limite', 'responsavel', 'corresponsavel', 'propriedade', 'placa', 'auto_infracao', 'cod_infracao', 'condutor', 'data_identificacao', 'data_identificacao_detran', 'status']);
 
-
-mount(function () {
+mount(function ($id) {
     if (!Gate::forUser(Auth::user())->allows('apps.view-any')) {
         return redirect()->route('errors.403');
     }
-    $this->multa = Multa::with('infracao')->find($this->id);
+    $this->multa = Multa::with(['propriedade_model'])->findOrFail($id);
 
-    $this->unidades = [['id' => 1, 'name' => 'Virginia Maringá'], ['id' => 3, 'name' => 'Virgini Guarapuava'], ['id' => 7, 'name' => 'Virginia Ponta Grossa'], ['id' => 10, 'name' => 'Virginia Norte Pioneiro']];
-
-    $this->propriedades = Propriedade::whereNull('deleted_at')->orderBy('local', 'asc')->get()->map(fn($propriedade) => ['id' => $propriedade->id, 'name' => $propriedade->local]);
-
-    $this->statuses = Status::whereNull('deleted_at')->orderBy('id', 'asc')->get()->map(fn($status) => ['id' => $status->id, 'name' => $status->status_name]);
-
-    $this->status_finals = statusFinal::whereNull('deleted_at')->orderBy('status_final_name', 'asc')->get()->map(fn($status_final) => ['id' => $status_final->id, 'name' => $status_final->status_final_name]);
-
+    $this->id = $this->multa->id;
+    $this->unidade = $this->multa->unidade;
+    $this->data_ciencia = $this->multa->data_ciencia;
+    $this->data_multa = $this->multa->data_multa;
+    $this->responsavel = $this->multa->responsavel;
+    $this->corresponsavel = $this->multa->corresponsavel;
+    $this->propriedade = $this->multa->propriedade_model->id ?? null;
+    $this->placa = $this->multa->placa;
+    $this->auto_infracao = $this->multa->auto_infracao;
+    $this->cod_infracao = $this->multa->cod_infracao;
+    $this->condutor = $this->multa->condutor;
+    $this->data_identificacao = $this->multa->data_identificacao;
+    $this->data_identificacao_detran = $this->multa->data_identificacao_detran;
+    $this->unidades = [['id' => 1, 'name' => 'Virginia Maringá'], ['id' => 3, 'name' => 'Virginia Guarapuava'], ['id' => 7, 'name' => 'Virginia Ponta Grossa'], ['id' => 10, 'name' => 'Virginia Norte Pioneiro']];
+    $this->usuarios = User::whereNull('deleted_at')->orderBy('nome_completo', 'asc')->get()->map(fn($usuario) => ['id' => $usuario->name, 'name' => $usuario->nome_completo]);
+    $this->propriedades = Propriedade::whereNull('deleted_at')->orderBy('local', 'asc')->get()->map(fn($propriedade) => ['id' => $propriedade->id, 'name' => $propriedade->local])->toArray();
+    $this->statuses = Status::whereNull('deleted_at')->orderBy('status_name', 'asc')->get()->map(fn($status) => ['id' => $status->id, 'name' => $status->status_name])->toArray();
+    $this->status_finals = StatusFinal::whereNull('deleted_at')->orderBy('status_final_name', 'asc')->get()->map(fn($status_final) => ['id' => $status_final->id, 'name' => $status_final->status_final_name])->toArray();
 });
 
 rules([
@@ -41,6 +53,7 @@ rules([
     'data_ciencia' => ['nullable'],
     'data_multa' => ['nullable'],
     'responsavel' => ['nullable'],
+    'corresponsavel' => ['nullable'],
     'propriedade' => ['nullable'],
     'placa' => ['nullable'],
     'auto_infracao' => ['nullable'],
@@ -54,10 +67,6 @@ $update = function () {
     try {
         $data = $this->validate();
 
-        if (isset($data['data_multa'])) {
-            $data['data_limite'] = Carbon::parse($data['data_multa'])->addDays(40)->format('Y-m-d\TH:i');
-        }
-
         foreach ($data as $key => $value) {
             if ($value === '') {
                 $data[$key] = null;
@@ -68,8 +77,6 @@ $update = function () {
         $this->success('Informações salvas com sucesso!');
         return redirect(route('dashboard'));
     } catch (Exception $e) {
-
-        dd($e->getMessage());
         return $this->error('Não foi possível atualizar dados, verifique os campos e tente novamente!');
 
     }
@@ -97,14 +104,20 @@ layout('layouts.app');
                             type="datetime-local"/>
                 <x-datetime label="Data da infração:" wire:model="data_multa" icon="o-calendar"
                             type="datetime-local"/>
-                <x-select label="Propriedade/Local:" placeholder="Selecione a propriedade/local..." placeholder-value="0"
+                <x-select label="Propriedade:" placeholder="Selecione a proprietária..." placeholder-value="0"
                           :options="$this->propriedades" wire:model.live="propriedade" icon="o-building-office"/>
-                <x-input label="Responsável:" wire:model="responsavel" placeholder="Ex: João da Silva" icon="o-user"/>
-                <x-input label="Placa:" wire:model="placa" placeholder="Insira a placa do veículo..." icon="m-table-cells"/>
+                <x-input label="Placa do Veículo" wire:model="placa"
+                         class="uppercase !flex !flex-1" icon="m-table-cells"/>
+                <x-select label="Responsável" placeholder="Selecione o responsável..." wire:model.live="responsavel"
+                          :options="$this->usuarios" icon="o-user"/>
+                <x-select label="Coresponsável" placeholder="Selecione o corresponsável..." wire:model.live="corresponsavel"
+                          :options="$this->usuarios" icon="o-user"/>
                 <x-input label="N° Auto Infração:" wire:model.live.debounce.300ms="auto_infracao"
                          oninput="this.value = this.value.toUpperCase()"
                          placeholder="Digite o n° da auto infração" icon="o-clipboard-document-list"/>
-                <x-input label="Código da infração:" wire:model="cod_infracao" placeholder="Ex: 12345" icon="o-computer-desktop"/>
+                <x-input label="Código Infração:" wire:model.live.debounce.300ms="cod_infracao"
+                         oninput="this.value = this.value.toUpperCase()"
+                         placeholder="Digite o n° da auto infração" icon="o-clipboard-document-list"/>
                 <x-input label="Condutor: (Caso não identificado deixe em branco)" placeholder="Informe o condutor..."
                          wire:model.live="condutor" icon="o-building-office-2"/>
                 <x-datetime label="Data da identificação:" wire:model="data_identificacao" icon="o-calendar"
@@ -113,8 +126,8 @@ layout('layouts.app');
                             icon="o-calendar" type="datetime-local"/>
             </div>
         </x-card>
-    <div class="flex items-end mt-3">
-        <x-button label="SALVAR" type="submit" class="btn-success w-full"/>
-    </div>
+        <div class="flex items-end mt-3">
+            <x-button label="SALVAR" type="submit" class="btn-success w-full"/>
+        </div>
     </form>
 </div>
