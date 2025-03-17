@@ -201,7 +201,7 @@ $saveCorresponsavel = function () {
         ]);
         return redirect(route('dashboard'));
     } catch (Exception $e) {
-        return $this->error('Não foi possível indicar o responsável.');
+        return $this->error('Não foi possível indicar o corresponsável.');
     }
 };
 
@@ -426,11 +426,11 @@ layout('layouts.app');
         {{ $multas->links() }}
     </div>
 
-    <x-modal wire:model.live="modal_multa" class="backdrop-blur">
+    <x-modal wire:model.lazy="modal_multa" class="backdrop-blur">
         <livewire:multas.create/>
     </x-modal>
 
-    <x-modal wire:model.live="modal_ident_interna" class="backdrop-blur">
+    <x-modal wire:model.lazy="modal_ident_interna" class="backdrop-blur">
         <div>
             <h1 class=" mb-4 font-bold uppercase text-center text-gray-700 underline">IDENTIFICAÇÃO INTERNA</h1>
             <form wire:submit.prevent="ident_Interna">
@@ -450,7 +450,7 @@ layout('layouts.app');
         </div>
     </x-modal>
 
-    <x-modal wire:model.live="modal_ident_detran" class="backdrop-blur">
+    <x-modal wire:model.lazy="modal_ident_detran" class="backdrop-blur">
         <div>
             <h1 class="font-bold uppercase text-center text-gray-700 underline">IDENTIFICAÇÃO DETRAN</h1>
             <form wire:submit.prevent="ident_Detran">
@@ -469,7 +469,7 @@ layout('layouts.app');
         </div>
     </x-modal>
 
-    <x-modal wire:model.live="modal_corresponsavel" class="backdrop-blur">
+    <x-modal wire:model.lazy="modal_corresponsavel" class="backdrop-blur">
         <div>
             <h1 class=" mb-4 font-bold uppercase text-center text-gray-900 underline">INDICAR CORRESPONSÁVEL</h1>
             <form wire:submit.prevent="saveCorresponsavel">
