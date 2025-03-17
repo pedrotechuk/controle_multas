@@ -21,7 +21,7 @@ state(['id'])->url();
 state(['all_data' => []]);
 
 state(['unidades' => [], 'propriedades' => [], 'locais' => [], 'status_finals' => [], 'nao_identificados' => [], 'nao_descontos' => [], 'verifyStatusFinal' => []]);
-state(['multa', 'status_final', 'unidade', 'data_ciencia', 'descontado', 'nao_identificacao', 'nao_desconto', 'cod_triare', 'data_multa', 'data_limite', 'responsavel', 'propriedade', 'auto_infracao', 'finalizado_por']);
+state(['multa', 'status_final', 'unidade', 'data_ciencia', 'descontado', 'nao_identificacao', 'nao_desconto', 'cod_triare', 'data_multa', 'data_limite', 'responsavel', 'responsavel', 'propriedade', 'auto_infracao', 'finalizado_por']);
 
 mount(function () {
     if (!Gate::forUser(Auth::user())->allows('apps.view-any')) {
@@ -94,7 +94,7 @@ layout('layouts.app');
                      value="{{ $this->multa->unidade == 1 ? 'Maringá' : ($this->multa->unidade == 3 ? 'Guarapuava' : ($this->multa->unidade == 7 ? 'Ponta Grossa' : ($this->multa->unidade == 10 ? 'Norte Pioneiro' : ''))) }}"/>
             <x-input readonly label="Auto Infração:" value="{{ $this->multa->auto_infracao }}"/>
             <x-input readonly label="Responsável:" value="{{ $this->multa->responsavel }}"/>
-            <x-input readonly label="Corresponsável:" value="{{ $this->multa->responsavel_model->nome_completo ?? 'Não definido'}}"/>
+            <x-input readonly label="Corresponsável:" value="{{ $this->multa->corresponsavel ?? 'Não definido'}}"/>
             <x-input readonly label="Condutor:" value="{{ $this->multa->condutor}}"/>
             <x-input readonly label="Data Multa:"
                      value="{{ Carbon::parse($this->multa->data_multa)->format('d/m/Y') }}"/>
