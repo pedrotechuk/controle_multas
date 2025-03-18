@@ -267,7 +267,8 @@ layout('layouts.app');
                       :options="$this->statuses->filter(fn($status) => !in_array($status['id'], [4, 5]))"
                       wire:model="status" placeholder="Selecione um status..." placeholder-value="0" option-label="name"
                       option-value="id"/>
-            <x-input label="Filtrar por responsável:" placeholder="Nome do responsável..." wire:model="responsavel"/>
+            <x-select label="Filtrar por responsável:" placeholder="Selecione o responsável..." wire:model="responsavel"
+                       :options="$this->usuarios"/>
             <x-select label="Filtrar por Propriedade/ Local:" :options="$this->propriedades" wire:model="propriedade"
                       placeholder="Selecione a propriedade/local" placeholder-value="0"/>
             <x-input label="Filtrar por N° Auto Infração:" placeholder="N° Auto Infração" wire:model="auto_infracao"/>
