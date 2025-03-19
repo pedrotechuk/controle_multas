@@ -56,7 +56,7 @@ layout('layouts.app');
         </div>
         <div class="grid grid-cols-7 gap-2 mt-4">
             <x-input readonly label="Responsável:" value="{{$this->multa->infracao->responsavel}}"/>
-            <x-input readonly label="Valor:" value="R$ {{number_format($this->multa->infracao->valor, 2, ',', '.')}}"/>
+            <x-input readonly label="Valor Infração:" value="R$ {{number_format($this->multa->infracao->valor, 2, ',', '.')}}"/>
 
             @php
                 $classeTexto = 'text-gray-900'; // Cor padrão
