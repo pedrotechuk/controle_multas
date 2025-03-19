@@ -349,7 +349,29 @@ layout('layouts.app');
 
                     <td class="py-2 px-4 border-b text-center">{{ $multa->status_model->status_name ?? 'N/A' }}</td>
                     <td class="py-2 px-4 border-b text-center">{{ $multa->responsavel_model->nome_completo }}</td>
+                    <td class="py-2 px-4 border-b text-center">
+                        {{$multa->propriedade_model->local}} -
+                        @switch($multa->unidade)
+                            @case(1)
+                                Virginia Maringá
+                                @break
 
+                            @case(3)
+                                Virginia Guarapuava
+                                @break
+
+                            @case(7)
+                                Virginia Ponta Grossa
+                                @break
+
+                            @case(10)
+                                Virginia NP
+                                @break
+
+                            @default
+                                {{$multa->unidade}} {{-- Caso não esteja listado, exibe o valor original --}}
+                        @endswitch
+                    </td>
                     <td class="py-2 px-4 border-b text-center relative group cursor-pointer">
                         <a href="{{ route('multas.info', ['id' => $multa->id]) }}">{{ $multa->auto_infracao }}</a>
                         <x-button icon="o-information-circle"
