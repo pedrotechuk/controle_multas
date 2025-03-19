@@ -106,7 +106,15 @@ layout('layouts.app');
                      value="{{ Carbon::parse($this->multa->data_identificacao)->format('d/m/Y') }}"/>
             <x-input readonly label="Data Identificação Detran:"
                      value="{{ Carbon::parse($this->multa->data_identificacao_detran)->format('d/m/Y') }}"/>
-            <x-input readonly label="Propriedade:" value="{{ $this->multa->propriedade_model->local }}"/>
+            <x-input readonly label="Propriedade:"
+                     value="{{ $this->multa->propriedade_model->local }} - {{ match($multa->unidade) {
+                                1 => 'Maringá',
+                                3 => 'Guarapuava',
+                                7 => 'Ponta Grossa',
+                                10 => 'Norte Pioneiro',
+                                default => $multa->unidade
+                            } }}"
+            />
             <x-input readonly label="Criado por:" value="{{ $this->multa->created_by}}"/>
         </div>
     </x-card>

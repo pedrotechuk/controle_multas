@@ -349,7 +349,7 @@ layout('layouts.app');
 
                     <td class="py-2 px-4 border-b text-center">{{ $multa->status_model->status_name ?? 'N/A' }}</td>
                     <td class="py-2 px-4 border-b text-center">{{ $multa->responsavel_model->nome_completo }}</td>
-                    <td class="py-2 px-4 border-b text-center">{{$multa->propriedade_model->local}}</td>
+
                     <td class="py-2 px-4 border-b text-center relative group cursor-pointer">
                         <a href="{{ route('multas.info', ['id' => $multa->id]) }}">{{ $multa->auto_infracao }}</a>
                         <x-button icon="o-information-circle"

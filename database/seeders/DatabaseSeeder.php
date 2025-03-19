@@ -355,28 +355,7 @@ class DatabaseSeeder extends Seeder
         DB::table('propriedades')->insert([
 
             [
-                'local' => 'GPVA-GPVA',
-                'created_by' => 'importacao',
-                'updated_by' => 'importacao',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
-            ],
-            [
-                'local' => 'GPVA-MGA',
-                'created_by' => 'importacao',
-                'updated_by' => 'importacao',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
-            ],
-            [
-                'local' => 'GPVA-NP',
-                'created_by' => 'importacao',
-                'updated_by' => 'importacao',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
-            ],
-            [
-                'local' => 'GPVA-PG',
+                'local' => 'Virginia Guarapuava ',
                 'created_by' => 'importacao',
                 'updated_by' => 'importacao',
                 'created_at' => Carbon::now(),
@@ -384,28 +363,7 @@ class DatabaseSeeder extends Seeder
             ],
 
             [
-                'local' => 'LOCALIZA-GPVA',
-                'created_by' => 'importacao',
-                'updated_by' => 'importacao',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
-            ],
-            [
-                'local' => 'LOCALIZA-MGA',
-                'created_by' => 'importacao',
-                'updated_by' => 'importacao',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
-            ],
-            [
-                'local' => 'LOCALIZA-NP',
-                'created_by' => 'importacao',
-                'updated_by' => 'importacao',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
-            ],
-            [
-                'local' => 'LOCALIZA-PG',
+                'local' => 'Localiza',
                 'created_by' => 'importacao',
                 'updated_by' => 'importacao',
                 'created_at' => Carbon::now(),
@@ -413,28 +371,7 @@ class DatabaseSeeder extends Seeder
             ],
 
             [
-                'local' => 'MGA-GPVA',
-                'created_by' => 'importacao',
-                'updated_by' => 'importacao',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
-            ],
-            [
-                'local' => 'MGA-MGA',
-                'created_by' => 'importacao',
-                'updated_by' => 'importacao',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
-            ],
-            [
-                'local' => 'MGA-NP',
-                'created_by' => 'importacao',
-                'updated_by' => 'importacao',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
-            ],
-            [
-                'local' => 'MGA-PG',
+                'local' => 'Virginia Maringá',
                 'created_by' => 'importacao',
                 'updated_by' => 'importacao',
                 'created_at' => Carbon::now(),
@@ -442,85 +379,49 @@ class DatabaseSeeder extends Seeder
             ],
 
             [
-                'local' => 'NP-GPVA',
+                'local' => 'Virginia NP',
                 'created_by' => 'importacao',
                 'updated_by' => 'importacao',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
             [
-                'local' => 'NP-MGA',
+                'local' => 'Virginia Ponta Grossa',
                 'created_by' => 'importacao',
                 'updated_by' => 'importacao',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
             [
-                'local' => 'NP-NP',
+                'local' => 'Stellantis',
                 'created_by' => 'importacao',
                 'updated_by' => 'importacao',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
             [
-                'local' => 'NP-PG',
-                'created_by' => 'importacao',
-                'updated_by' => 'importacao',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
-            ],
-
-            [
-                'local' => 'PG-GPVA',
+                'local' => 'Varejo Maringá',
                 'created_by' => 'importacao',
                 'updated_by' => 'importacao',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
             [
-                'local' => 'PG-MGA',
+                'local' => 'Varejo Apucarana',
                 'created_by' => 'importacao',
                 'updated_by' => 'importacao',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
             [
-                'local' => 'PG-NP',
+                'local' => 'Varejo Umuarama',
                 'created_by' => 'importacao',
                 'updated_by' => 'importacao',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
             [
-                'local' => 'PG-PG',
-                'created_by' => 'importacao',
-                'updated_by' => 'importacao',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
-            ],
-            [
-                'local' => 'Stellantis-GPVA',
-                'created_by' => 'importacao',
-                'updated_by' => 'importacao',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
-            ],
-            [
-                'local' => 'Stellantis-MGA',
-                'created_by' => 'importacao',
-                'updated_by' => 'importacao',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
-            ],
-            [
-                'local' => 'Stellantis-NP',
-                'created_by' => 'importacao',
-                'updated_by' => 'importacao',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
-            ],
-            [
-                'local' => 'Stellantis-PG',
+                'local' => 'Varejo Ponta Grossa',
                 'created_by' => 'importacao',
                 'updated_by' => 'importacao',
                 'created_at' => Carbon::now(),

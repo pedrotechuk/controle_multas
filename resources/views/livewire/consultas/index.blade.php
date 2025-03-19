@@ -272,7 +272,29 @@ layout('layouts.app');
                     <td class="py-2 px-4 border-b text-center">{{ Carbon::parse($multa->data_finalizada)->format('d/m/Y') }}</td>
                     <td class="py-2 px-4 border-b text-center">{{ $multa->status_final_model->status_final_name ?? 'N/A' }}</td>
                     <td class="py-2 px-4 border-b text-center">{{ $multa->responsavel }}</td>
-                    <td class="py-2 px-4 border-b text-center">{{$multa->propriedade_model->local}}</td>
+                    <td class="py-2 px-4 border-b text-center">
+                        {{$multa->propriedade_model->local}} -
+                        @switch($multa->unidade)
+                            @case(1)
+                                Maringá
+                                @break
+
+                            @case(3)
+                                Guarapuava
+                                @break
+
+                            @case(7)
+                                Ponta Grossa
+                                @break
+
+                            @case(10)
+                                Norte Pioneiro
+                                @break
+
+                            @default
+                                {{$multa->unidade}} {{-- Caso não esteja listado, exibe o valor original --}}
+                        @endswitch
+                    </td>
                     <td class="py-2 px-4 border-b text-center">{{ $multa->auto_infracao }}</td>
                     <td class="py-2 px-4 border-b text-center">
                         {{ $multa->valor_pago !== null ? 'R$' . number_format($multa->valor_pago, 2, ',', '.') : 'Não Informado' }}
