@@ -48,24 +48,38 @@ layout('layouts.app');
     <x-card shadow separator class="bg-gray-100 p-4 shadow-md rounded">
         <div class="flex justify-between items-center">
             <div>
-                <h2 class="text-xl font-bold">Informações da infração código: {{$this->multa->infracao->cod }}</h2>
-                <p class="text-gray-600">Criada em: {{ Carbon::parse($this->multa->created_at)->format('d/m/Y') }}
-                    por {{ $this->multa->created_by }}</p>
+                <h2 class="text-xl font-bold">Informações da Multa N°{{$this->multa->id }}</h2>
+                <p class="text-gray-600">Código da Infração: {{$this->multa->infracao->cod }}</p>
             </div>
             <x-button class="btn-sm btn-outline" label="VOLTAR" icon="o-arrow-uturn-left"
                       @click="window.history.back()"/>
         </div>
-        <div class="grid grid-cols-6 gap-2 mt-4">
+        <div class="grid grid-cols-7 gap-2 mt-4">
             <x-input readonly label="Responsável:" value="{{$this->multa->infracao->responsavel}}"/>
-
             <x-input readonly label="Valor:" value="R$ {{number_format($this->multa->infracao->valor, 2, ',', '.')}}"/>
+
+            @php
+                $classeTexto = 'text-gray-900'; // Cor padrão
+                if ($this->multa && $this->multa->valor_pago !== null) {
+                    if ($this->multa->valor_pago > $this->multa->infracao->valor) {
+                        $classeTexto = 'text-red-600 font-bold';
+                    } elseif ($this->multa->valor_pago < $this->multa->infracao->valor) {
+                        $classeTexto = 'text-green-600 font-bold';
+                    }
+                }
+            @endphp
+
+            <x-input readonly label="Valor pago:" class="{{ $classeTexto }}"
+                     value="{{ $this->multa->valor_pago !== null ? 'R$ ' . number_format($this->multa->valor_pago, 2, ',', '.') : 'Não Informado' }}"/>
+
             <x-input readonly label="Orgão Atuador:" value="{{$this->multa->infracao->orgao_atuador}}"/>
             <x-input readonly label="Art. CTB:" value="{{$this->multa->infracao->art_ctb}}"/>
             <x-input readonly label="Pontos:" value="{{$this->multa->infracao->pontos}}"/>
             <x-input readonly label="Gravidade:" value="{{$this->multa->infracao->gravidade}}"/>
-            <div class="col-span-6 mt-2">
+            <div class="col-span-7 mt-2">
                 <x-input readonly label="Auto Infração:" value="{{$this->multa->infracao->infracao}}"/>
             </div>
         </div>
     </x-card>
+
 </div>

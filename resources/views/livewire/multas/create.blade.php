@@ -21,7 +21,7 @@ state(['modal_multa'])->modelable();
 state(['all_data' => []]);
 
 state(['unidades' => [], 'propriedades' => [], 'usuarios' => []]);
-state(['unidade', 'data_ciencia', 'data_multa', 'data_limite', 'responsavel', 'propriedade', 'placa', 'auto_infracao', 'cod_infracao']);
+state(['unidade', 'data_ciencia', 'data_multa', 'data_limite', 'responsavel', 'propriedade', 'placa', 'auto_infracao', 'cod_infracao', 'valor_pago']);
 
 mount(function () {
     if (!Gate::forUser(Auth::user())->allows('apps.view-any')) {
@@ -54,6 +54,7 @@ $save = function () {
                 Rule::unique('multas', 'auto_infracao')->whereNull('deleted_at'),
             ],
             'cod_infracao' => ['required'],
+            'valor_pago' => ['required', 'min:0.01'],
         ],
         [
             'unidade.required' => 'Selecione a unidade.',
@@ -63,7 +64,9 @@ $save = function () {
             'propriedade.required' => 'Selecione a unidade proprietária.',
             'auto_infracao.required' => 'Informe o n° da auto infração.',
             'auto_infracao.unique' => 'Auto infração já utilizada.',
-            'cod_infracao.required' => 'Informe o código da infração'
+            'cod_infracao.required' => 'Informe o código da infração',
+            'valor_pago.required' => 'Informe o valor pago',
+            'valor_pago.min' => 'Valor de frete não pode ser vazio.',
         ]
     );
 
@@ -83,6 +86,7 @@ $save = function () {
             'placa' => $this->all_data['placa'],
             'auto_infracao' => $this->all_data['auto_infracao'],
             'cod_infracao' => $this->all_data['cod_infracao'],
+            'valor_pago' => $this->all_data['valor_pago'],
             'status' => 1,
             'created_by' => Ad::username(),
             'updated_by' => Ad::username(),
@@ -92,12 +96,11 @@ $save = function () {
 
         $this->reset([
             'modal_multa', 'unidade', 'data_ciencia', 'data_multa', 'data_limite',
-            'responsavel', 'propriedade', 'placa', 'auto_infracao', 'cod_infracao'
+            'responsavel', 'propriedade', 'placa', 'auto_infracao', 'cod_infracao', 'valor_pago'
         ]);
 
         return redirect(route('dashboard'));
     } catch (Exception $e) {
-        dd($e->getMessage());
         return $this->error('Não foi possível cadastrar a multa.');
     }
 };
@@ -132,7 +135,8 @@ layout('layouts.app');
                      placeholder="Digite o n° da auto infração" icon="o-clipboard-document-list"/>
             <x-input label="Código da infração:" type='number' wire:model="cod_infracao" placeholder="12345...."
                      icon='o-computer-desktop'/>
-
+            <x-input label="Valor pago:" placeholder="Ex.: 150,00" prefix="R$" money
+                     wire:model="valor_pago"  />
             <div class="flex flex-row justify-evenly items-center mt-2">
                 <x-button class="btn-sm " label="VOLTAR" icon="m-arrow-uturn-left"
                           link="{{ route('dashboard') }}"/>

@@ -20,7 +20,7 @@ state(['id'])->url();
 state(['all_data' => []]);
 
 state(['unidades' => [], 'propriedades' => [], 'usuarios' => []]);
-state(['id', 'unidade', 'multa', 'data_ciencia', 'data_multa', 'data_limite', 'responsavel', 'corresponsavel', 'propriedade', 'placa', 'auto_infracao', 'cod_infracao', 'condutor', 'data_identificacao', 'data_identificacao_detran', 'status']);
+state(['id', 'unidade', 'multa', 'data_ciencia', 'data_multa', 'data_limite', 'responsavel', 'corresponsavel', 'propriedade', 'placa', 'auto_infracao', 'cod_infracao', 'valor_pago', 'condutor', 'data_identificacao', 'data_identificacao_detran', 'status']);
 
 mount(function ($id) {
     if (!Gate::forUser(Auth::user())->allows('apps.view-any')) {
@@ -38,6 +38,7 @@ mount(function ($id) {
     $this->placa = $this->multa->placa;
     $this->auto_infracao = $this->multa->auto_infracao;
     $this->cod_infracao = $this->multa->cod_infracao;
+    $this->valor_pago = $this->multa->valor_pago;
     $this->condutor = $this->multa->condutor;
     $this->data_identificacao = $this->multa->data_identificacao;
     $this->data_identificacao_detran = $this->multa->data_identificacao_detran;
@@ -58,6 +59,7 @@ rules([
     'placa' => ['nullable'],
     'auto_infracao' => ['nullable'],
     'cod_infracao' => ['nullable'],
+    'valor_pago' => ['required', 'min:0.01'],
     'condutor' => ['nullable'],
     'data_identificacao' => ['nullable'],
     'data_identificacao_detran' => ['nullable'],
@@ -124,6 +126,8 @@ layout('layouts.app');
                 <x-input label="Código Infração:" wire:model.live.debounce.300ms="cod_infracao"
                          oninput="this.value = this.value.toUpperCase()"
                          placeholder="Digite o n° da auto infração" icon="o-clipboard-document-list"/>
+                <x-input label="Valor pago:" placeholder="Ex.: 150,00" prefix="R$" money
+                         wire:model="valor_pago"  />
                 <x-input label="Condutor: (Caso não identificado deixe em branco)" placeholder="Informe o condutor..."
                          wire:model.live="condutor" icon="o-building-office-2"/>
                 <x-datetime label="Data da identificação:" wire:model="data_identificacao" icon="o-calendar"

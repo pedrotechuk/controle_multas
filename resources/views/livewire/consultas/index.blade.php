@@ -239,6 +239,7 @@ layout('layouts.app');
                 <th class="py-2 px-4 border-b">Responsável</th>
                 <th class="py-2 px-4 border-b">Propriedade/Local</th>
                 <th class="py-2 px-4 border-b">N° Auto Infração</th>
+                <th class="py-2 px-4 border-b">Valor Pago</th>
                 <th class="py-2 px-4 border-b">Condutor</th>
                 {{--                <th class="py-2 px-4 border-b">Etapas</th>--}}
                 <th class="py-2 px-4 border-b">Ações</th>
@@ -273,6 +274,9 @@ layout('layouts.app');
                     <td class="py-2 px-4 border-b text-center">{{ $multa->responsavel }}</td>
                     <td class="py-2 px-4 border-b text-center">{{$multa->propriedade_model->local}}</td>
                     <td class="py-2 px-4 border-b text-center">{{ $multa->auto_infracao }}</td>
+                    <td class="py-2 px-4 border-b text-center">
+                        {{ $multa->valor_pago !== null ? 'R$' . number_format($multa->valor_pago, 2, ',', '.') : 'Não Informado' }}
+                    </td>
                     <td class="py-2 px-4 border-b text-center">
                         @if ($multa->condutor)
                             {{ $multa->condutor }}

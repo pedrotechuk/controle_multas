@@ -25,7 +25,7 @@ state(['modal_ident_detran' => false]);
 state(['modal_corresponsavel' => false]);
 
 state(['unidades' => [], 'propriedades' => [], 'statuses' => [], 'status_finals' => [], 'usuarios' => []]);
-state(['filters', 'unidade', 'multa', 'data_ciencia', 'data_multa', 'data_limite', 'responsavel', 'corresponsavel', 'propriedade', 'auto_infracao', 'condutor', 'condutor_modal', 'data_identificacao', 'identificador_interno', 'data_identificacao_detran', 'identificador_detran', 'status', 'status_final', 'corresponsavel']);
+state(['filters', 'unidade', 'multa', 'data_ciencia', 'data_multa', 'data_limite', 'responsavel', 'corresponsavel', 'propriedade', 'auto_infracao', 'valor_pago', 'condutor', 'condutor_modal', 'data_identificacao', 'identificador_interno', 'data_identificacao_detran', 'identificador_detran', 'status', 'status_final', 'corresponsavel']);
 
 
 mount(function () {
@@ -290,6 +290,7 @@ layout('layouts.app');
                 <th class="py-2 px-4 border-b">Responsável</th>
                 <th class="py-2 px-4 border-b">Propriedade/Local</th>
                 <th class="py-2 px-4 border-b">N° Auto Infração</th>
+                <th class="py-2 px-4 border-b">Valor</th>
                 <th class="py-2 px-4 border-b">Condutor</th>
                 <th class="py-2 px-4 border-b">Etapas</th>
                 <th class="py-2 px-4 border-b">Ações</th>
@@ -354,11 +355,9 @@ layout('layouts.app');
                         <x-button icon="o-information-circle"
                                   class="btn-ghost btn-sm rounded-full -ms-1"
                                   link="{{route('multas.info', ['id' => $multa->id])}}"/>
-                        {{--                        <div class="absolute left-1/2 transform -translate-x-1/2  translate-y-2  bottom-full--}}
-                        {{--                            hidden group-hover:block bg-gray-100 text-gray-800 font-semibold text-sm--}}
-                        {{--                            px-2 py-1 rounded shadow-lg">--}}
-                        {{--                            <a href="{{ route('multas.info', ['id' => $multa->id]) }}">Ver detalhes</a>--}}
-                        {{--                        </div>--}}
+                    </td>
+                    <td class="py-2 px-4 border-b text-center">
+                        {{ $multa->valor_pago !== null ? 'R$' . number_format($multa->valor_pago, 2, ',', '.') : 'Não Informado' }}
                     </td>
                     <td class="py-2 px-4 border-b text-center">
                         @if ($multa->condutor)

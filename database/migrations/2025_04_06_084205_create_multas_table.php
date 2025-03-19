@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string('auto_infracao');
             $table->unsignedBigInteger('cod_infracao');
             $table->foreign('cod_infracao')->references('cod')->on('infracoes')->onDelete('cascade');
+            $table->decimal('valor_pago', 10, 2)->nullable();
             $table->string('condutor')->nullable();
             $table->timestamp('data_identificacao')->nullable();
             $table->string('identificador_interno')->nullable();

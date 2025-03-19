@@ -24,6 +24,7 @@ class Multa extends Model
         'placa',
         'auto_infracao',
         'cod_infracao',
+        'valor_pago',
         'condutor',
         'data_identificacao',
         'identificador_interno',
