@@ -353,19 +353,19 @@ layout('layouts.app');
                         {{$multa->propriedade_model->local}} -
                         @switch($multa->unidade)
                             @case(1)
-                                Virginia Maringá
+                                 Maringá
                                 @break
 
                             @case(3)
-                                Virginia Guarapuava
+                                 Guarapuava
                                 @break
 
                             @case(7)
-                                Virginia Ponta Grossa
+                                 Ponta Grossa
                                 @break
 
                             @case(10)
-                                Virginia NP
+                                 Norte Pioneiro
                                 @break
 
                             @default
