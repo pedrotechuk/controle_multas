@@ -42,7 +42,8 @@ mount(function ($id) {
     $this->condutor = $this->multa->condutor;
     $this->data_identificacao = $this->multa->data_identificacao;
     $this->data_identificacao_detran = $this->multa->data_identificacao_detran;
-    $this->unidades = [['id' => 1, 'name' => 'Virginia Maringá'], ['id' => 3, 'name' => 'Virginia Guarapuava'], ['id' => 7, 'name' => 'Virginia Ponta Grossa'], ['id' => 10, 'name' => 'Virginia Norte Pioneiro']];
+    $this->unidades = [['id' => 1, 'name' => 'Virginia Maringá'], ['id' => 3, 'name' => 'Virginia Guarapuava'], ['id' => 7, 'name' => 'Virginia Ponta Grossa'], ['id' => 10, 'name' => 'Virginia Norte Pioneiro'],
+                        ['id' => 11, 'name' => 'Varejo Apucarana'], ['id' => 12, 'name' => 'Varejo Maringá'], ['id' => 13, 'name' => 'Varejo Ponta Grossa'], ['id' => 14, 'name' => 'Varejo Umuarama']];
     $this->usuarios = User::whereNull('deleted_at')->orderBy('nome_completo', 'asc')->get()->map(fn($usuario) => ['id' => $usuario->name, 'name' => $usuario->nome_completo]);
     $this->propriedades = Propriedade::whereNull('deleted_at')->orderBy('local', 'asc')->get()->map(fn($propriedade) => ['id' => $propriedade->id, 'name' => $propriedade->local])->toArray();
     $this->statuses = Status::whereNull('deleted_at')->orderBy('status_name', 'asc')->get()->map(fn($status) => ['id' => $status->id, 'name' => $status->status_name])->toArray();
