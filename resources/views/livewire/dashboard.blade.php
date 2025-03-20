@@ -290,7 +290,7 @@ layout('layouts.app');
                 <th class="py-2 px-4 border-b">Responsável</th>
                 <th class="py-2 px-4 border-b">Propriedade/Local</th>
                 <th class="py-2 px-4 border-b">N° Auto Infração</th>
-                <th class="py-2 px-4 border-b">Valor Pago</th>
+                <th class="py-2 px-4 border-b">Valor</th>
                 <th class="py-2 px-4 border-b">Condutor</th>
                 <th class="py-2 px-4 border-b">Etapas</th>
                 <th class="py-2 px-4 border-b">Ações</th>

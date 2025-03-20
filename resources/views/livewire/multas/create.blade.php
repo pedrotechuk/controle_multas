@@ -29,7 +29,8 @@ mount(function () {
     }
     $this->multa = Multa::find($this->id);
 
-    $this->unidades = [['id' => 1, 'name' => 'Virginia Maringá'], ['id' => 3, 'name' => 'Virgini Guarapuava'], ['id' => 7, 'name' => 'Virginia Ponta Grossa'], ['id' => 10, 'name' => 'Virginia Norte Pioneiro']];
+    $this->unidades = [['id' => 1, 'name' => 'Virginia Maringá'], ['id' => 3, 'name' => 'Virginia Guarapuava'], ['id' => 7, 'name' => 'Virginia Ponta Grossa'], ['id' => 10, 'name' => 'Virginia Norte Pioneiro'],
+        ['id' => 11, 'name' => 'Varejo Apucarana'], ['id' => 12, 'name' => 'Varejo Maringá'], ['id' => 13, 'name' => 'Varejo Ponta Grossa'], ['id' => 14, 'name' => 'Varejo Umuarama']];
 
     $this->usuarios = User::whereNull('deleted_at')->orderBy('nome_completo', 'asc')->get()->map(fn($usuario) => ['id' => $usuario->name, 'name' => $usuario->nome_completo]);
 
@@ -122,7 +123,7 @@ layout('layouts.app');
                         type="datetime-local"/>
 
             <div class="flex flex-row w-full justify-between mt-2 -mb-4">
-                <x-select label="Propriedade/Local:" placeholder="Selecione..." placeholder-value="0"
+                <x-select label="Proprietário:" placeholder="Selecione..." placeholder-value="0"
                           :options="$this->propriedades" wire:model.live="propriedade" icon="o-building-office"/>
 
                 <x-input label="Placa do Veículo" wire:model="placa"
@@ -135,7 +136,7 @@ layout('layouts.app');
                      placeholder="Digite o n° da auto infração" icon="o-clipboard-document-list"/>
             <x-input label="Código da infração:" type='number' wire:model="cod_infracao" placeholder="12345...."
                      icon='o-computer-desktop'/>
-            <x-input label="Valor pago:" placeholder="Ex.: 150,00" prefix="R$" money
+            <x-input label="Valor:" placeholder="Ex.: 150,00" prefix="R$" money
                      wire:model="valor_pago"  />
             <div class="flex flex-row justify-evenly items-center mt-2">
                 <x-button class="btn-sm " label="VOLTAR" icon="m-arrow-uturn-left"
