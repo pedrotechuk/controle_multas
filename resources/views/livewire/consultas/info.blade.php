@@ -75,29 +75,19 @@ layout('layouts.app');
             <x-input readonly label="Data Identificação Detran:"
                      value="{{ Carbon::parse($this->multa->data_identificacao_detran)->format('d/m/Y') }}"/>
             <x-input readonly label="Identificador Detran:" value="{{ $this->multa->identificador_detran}}"/>
-            <td class="py-2 px-4 border-b text-center">
-                {{$multa->propriedade_model->local}} -
-                @switch($multa->unidade)
-                    @case(1)
-                        Maringá
-                        @break
-
-                    @case(3)
-                        Guarapuava
-                        @break
-
-                    @case(7)
-                        Ponta Grossa
-                        @break
-
-                    @case(10)
-                        Norte Pioneiro
-                        @break
-
-                    @default
-                        {{$multa->unidade}} {{-- Caso não esteja listado, exibe o valor original --}}
-                @endswitch
-            </td>
+            <x-input readonly label="Propriedade:"
+                     value="{{ $this->multa->propriedade_model->local }} - {{ match($multa->unidade) {
+                                1 => 'Maringá',
+                                3 => 'Guarapuava',
+                                7 => 'Ponta Grossa',
+                                10 => 'Norte Pioneiro',
+                                11 => 'Varejo Apucarana',
+                                12 => 'Varejo Maringá',
+                                13 => 'Varejo Ponta Grossa',
+                                14 => 'Varejo Umuarama',
+                                default => $multa->unidade
+                            } }}"
+            />
             <x-input readonly label="Status Final:" value="{{ $this->multa->status_final_model->status_final_name }}"/>
             <x-input readonly label="Finalizado por:" value="{{ $this->multa->finalizado_por}}"/>
             <x-input readonly label="Código da infração:" value="{{ $this->multa->cod_infracao }}"/>
