@@ -31,7 +31,8 @@ mount(function () {
     }
     $this->multa = Multa::with('infracao')->find($this->id);
 
-    $this->unidades = [['id' => 1, 'name' => 'Virginia Maringá'], ['id' => 3, 'name' => 'Virginia Guarapuava'], ['id' => 7, 'name' => 'Virginia Ponta Grossa'], ['id' => 10, 'name' => 'Virginia Norte Pioneiro']];
+    $this->unidades = [['id' => 1, 'name' => 'Virginia Maringá'], ['id' => 3, 'name' => 'Virginia Guarapuava'], ['id' => 7, 'name' => 'Virginia Ponta Grossa'], ['id' => 10, 'name' => 'Virginia Norte Pioneiro'],
+                        ['id' => 11, 'name' => 'Varejo Apucarana'], ['id' => 12, 'name' => 'Varejo Maringá'], ['id' => 13, 'name' => 'Varejo Ponta Grossa'], ['id' => 14, 'name' => 'Varejo Umuarama']];
 
     $this->propriedades = Propriedade::whereNull('deleted_at')->orderBy('local', 'asc')->get()->map(fn($propriedade) => ['id' => $propriedade->id, 'name' => $propriedade->local]);
 

@@ -317,6 +317,22 @@ layout('layouts.app');
                             @case(10)
                                 Norte Pioneiro
                                 @break
+
+                            @case(11)
+                                Varejo Apucarana
+                                @break
+
+                            @case(12)
+                                Varejo Maringá
+                                @break
+
+                            @case(13)
+                                Varejo Ponta Grossa
+                                @break
+
+                            @case(14)
+                                Varejo Umuarama
+                                @break
                         @endswitch
                     </td>
                     <td class="py-2 px-4 border-b text-center">{{ Carbon::parse($multa->data_ciencia)->format('d/m/Y') }}</td>
