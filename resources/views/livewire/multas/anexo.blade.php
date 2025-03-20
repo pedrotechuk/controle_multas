@@ -68,7 +68,6 @@ $salvarAnexo = function () {
         $this->arquivo = null;
         return $this->success('Anexo enviado com sucesso!');
     } catch (Exception $e) {
-        dd($e->getMessage());
         return $this->error('Erro ao enviar o anexo.');
     }
 };
