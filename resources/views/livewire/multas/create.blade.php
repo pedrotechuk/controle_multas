@@ -66,7 +66,7 @@ $save = function () {
             'auto_infracao.required' => 'Informe o n° da auto infração.',
             'auto_infracao.unique' => 'Auto infração já utilizada.',
             'cod_infracao.required' => 'Informe o código da infração',
-            'valor_pago.required' => 'Informe o valor pago',
+            'valor_pago.required' => 'Informe o valor da multa',
             'valor_pago.min' => 'Valor de frete não pode ser vazio.',
         ]
     );

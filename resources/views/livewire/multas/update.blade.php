@@ -127,7 +127,7 @@ layout('layouts.app');
                 <x-input label="Código Infração:" wire:model.live.debounce.300ms="cod_infracao"
                          oninput="this.value = this.value.toUpperCase()"
                          placeholder="Digite o n° da auto infração" icon="o-clipboard-document-list"/>
-                <x-input label="Valor pago:" placeholder="Ex.: 150,00" prefix="R$" money
+                <x-input label="Valor:" placeholder="Ex.: 150,00" prefix="R$" money
                          wire:model="valor_pago"  />
                 <x-input label="Condutor: (Caso não identificado deixe em branco)" placeholder="Informe o condutor..."
                          wire:model.live="condutor" icon="o-building-office-2"/>
