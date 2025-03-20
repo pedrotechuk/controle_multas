@@ -143,7 +143,7 @@ $ident_Interna = function () {
 
         $this->reset(['condutor_modal', 'data_identificacao']);
 
-        return redirect(route('dashboard'));
+        return redirect()->to(url()->previous());
     } catch (Exception $e) {
         return $this->error('Não foi possível concluir a identificação interna.');
     }
@@ -175,7 +175,7 @@ $ident_Detran = function () {
             'condutor', 'data_identificacao_detran'
         ]);
 
-        return redirect(route('dashboard'));
+        return redirect()->to(url()->previous());
     } catch (Exception $e) {
         return $this->error('Não foi possível concluir a identificação Detran.');
     }
@@ -200,7 +200,9 @@ $saveCorresponsavel = function () {
         $this->reset([
             'corresponsavel'
         ]);
-        return redirect(route('dashboard'));
+
+        return redirect()->to(url()->previous());
+
     } catch (Exception $e) {
         return $this->error('Não foi possível indicar o corresponsável.');
     }
@@ -280,7 +282,7 @@ layout('layouts.app');
         </div>
 
         <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden mt-2">
-            <thead class="bg-gray-100 text-gray-700">
+            <thead class="bg-gray-100 text-gray-700 ">
             <tr>
                 <th class="py-2 px-4 border-b">Unidade</th>
                 <th class="py-2 px-4 border-b">Data Ciência</th>
